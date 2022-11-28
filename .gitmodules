@@ -1,0 +1,3 @@
+[submodule "assignments/nodejs-basics/rsschool-node-nodejs-basics"]
+	path = assignments/nodejs-basics/rsschool-node-nodejs-basics
+	url = git@github.com:KSGitUser/rsschool-node-nodejs-basics.git
