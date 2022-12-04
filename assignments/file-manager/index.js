@@ -1,30 +1,51 @@
 import { parseArgs } from './src/cli.js'
-import repl from 'node:repl'
 import process from 'node:process'
 import os from 'node:os'
-import util from 'node:util'
+import {cd, ls, up} from "./src/file-system.js"
+import * as readline from 'node:readline/promises';
 
-
-
-const argvs = parseArgs()
-const username = argvs.get('username')
-const greeting = `Welcome to the File Manager, ${username}!`
-const goodbye = `Thank you for using File Manager, \x1b[31m${username}\x1b[0m, goodbye!`
-process.chdir(os.homedir())
-const prompt = () => `You are currently in ${process.cwd()}`
-const replWriter = (output) => {
-    return `${prompt()}\n${output}`
+const COMMANDS = {
+    up: up,
+    cd: cd,
+    ls: ls
 }
 
-console.log(prompt())
-const replInstance = repl.start({ prompt: '> ', writer: replWriter})
+const argvs = parseArgs()
+const username = argvs.get('username') || 'John Doe'
+const greeting = `Welcome to the File Manager, ${username}!`
+const goodbye = `Thank you for using File Manager, \x1b[31m${username}\x1b[0m, goodbye!`
+process.chdir(os.homedir());
+const rl = readline.createInterface({ input: process.stdin, output:process.stdout });
+const prompt = () => `You are currently in ${process.cwd()}\n> `
 
-replInstance.on('exit', () => {
-    console.log(goodbye)
+rl.setPrompt(prompt())
+console.log(greeting)
+rl.prompt()
+
+
+rl.on('close', () => {
+    console.log(`\n${goodbye}`)
     process.exit(0);
 })
 
-replInstance.on('error', (err) => {
+rl.on('line', async (lineData) => {
+    try {
+        const [command, arg ] = lineData.split(' ')
+        if (COMMANDS[command]) {
+            await COMMANDS[command](arg);
+        } else {
+            console.log(`\x1b[31m${'Invalid input'}\x1b[0m`)
+        }
+    } catch (err) {
+        if (err.code) {
+            console.log(err.message);
+        }
+    }
+    rl.setPrompt(prompt())
+    rl.prompt()
+})
+
+process.stdout.on('error', (err) => {
     console.log('My error');
 })
 
