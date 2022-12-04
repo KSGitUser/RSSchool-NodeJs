@@ -3,11 +3,14 @@ import process from 'node:process'
 import os from 'node:os'
 import {cd, ls, up} from "./src/file-system.js"
 import * as readline from 'node:readline/promises';
+import {add, cat} from "./src/file-base-operations.js";
 
 const COMMANDS = {
     up: up,
     cd: cd,
-    ls: ls
+    ls: ls,
+    cat: cat,
+    add: add,
 }
 
 const argvs = parseArgs()
@@ -39,6 +42,8 @@ rl.on('line', async (lineData) => {
     } catch (err) {
         if (err.code) {
             console.log(err.message);
+        } else {
+            console.log(err);
         }
     }
     rl.setPrompt(prompt())
