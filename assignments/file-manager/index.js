@@ -3,7 +3,7 @@ import process from 'node:process'
 import os from 'node:os'
 import {cd, ls, up} from "./src/file-system.js"
 import * as readline from 'node:readline/promises';
-import {add, cat} from "./src/file-base-operations.js";
+import {add, cat, rn} from "./src/file-base-operations.js";
 
 const COMMANDS = {
     up: up,
@@ -11,6 +11,7 @@ const COMMANDS = {
     ls: ls,
     cat: cat,
     add: add,
+    rn: rn
 }
 
 const argvs = parseArgs()
@@ -33,9 +34,11 @@ rl.on('close', () => {
 
 rl.on('line', async (lineData) => {
     try {
-        const [command, arg ] = lineData.split(' ')
+        const [command, ...arg ] = lineData.split(' ')
+        // eslint-disable-next-line no-console
+        console.log('arg =>', ...arg);
         if (COMMANDS[command]) {
-            await COMMANDS[command](arg);
+            await COMMANDS[command](...arg);
         } else {
             console.log(`\x1b[31m${'Invalid input'}\x1b[0m`)
         }

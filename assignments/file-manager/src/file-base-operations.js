@@ -1,5 +1,6 @@
-import { open } from "node:fs/promises";
-import {createError, ERROR_CODES, getFullPath} from "./utils/fileOperationUtils.js";
+import {open, rename as renameFile} from "node:fs/promises";
+import {createError, ERROR_CODES, getFullPath, isFileExist} from "./utils/fileOperationUtils.js";
+import {parse} from "node:path";
 
 export const cat = async (pathToFile) => {
     const fullPathToFile = getFullPath(pathToFile);
@@ -35,5 +36,31 @@ export const add = async (fileName) => {
         throw createError(error,ERROR_CODES.addErr);
     } finally {
         fileHandler?.close();
+    }
+};
+
+export const rn = async (renamedFileName, newFileName) => {
+    let pathToOriginalFile = null;
+    let pathToRenamedFile;
+    try {
+        if (!renamedFileName || !newFileName) {
+            throw createError(new Error(), ERROR_CODES.rnErr, pathToOriginalFile);
+        }
+        pathToOriginalFile = getFullPath(renamedFileName);
+        let { dir }=  parse(renamedFileName);
+        pathToRenamedFile = getFullPath(newFileName, dir);
+        if (await isFileExist(pathToRenamedFile)) {
+            throw createError(new Error(), ERROR_CODES.rnErr, pathToRenamedFile);
+        } else {
+            await renameFile(pathToOriginalFile, pathToRenamedFile);
+        }
+    } catch(err) {
+        if (err.code === "ENOENT") {
+            throw createError(err, ERROR_CODES.rnErr, pathToOriginalFile);
+        }
+        if (err.code === "EEXIST") {
+            throw createError(err, ERROR_CODES.rnErr, pathToRenamedFile);
+        }
+        throw createError(err, ERROR_CODES.rnErr, pathToOriginalFile);
     }
 };
