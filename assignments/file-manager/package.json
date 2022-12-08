@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "prestart": "node ./src/utils/checkNodeVersion.js",
+    "start": "node index.js",
+    "start:user": "node index.js -- --username=Djo"
   },
   "repository": {
     "type": "git",
@@ -17,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/KSGitUser/RSSchool-nodejs/issues"
   },
-  "homepage": "https://github.com/KSGitUser/RSSchool-nodejs#readme"
+  "homepage": "https://github.com/KSGitUser/RSSchool-nodejs#readme",
+  "engines": {
+    "node": ">=18.12.1"
+  }
 }

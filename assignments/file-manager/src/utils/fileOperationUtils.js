@@ -2,12 +2,16 @@ import {isAbsolute, join, resolve} from "node:path";
 import process from "node:process";
 import {access} from "node:fs/promises";
 
-export const getFullPath = (path, pathDir) => {
+
+export const FILE_OPERATION_FLAGS = {
+    openForWritingIfExist: 'wx',
+}
+export const getFullPath = (path, beforePath) => {
     if (isAbsolute(path)) {
         return resolve(path);
     }
 
-    const fileDir = pathDir || process.cwd();
+    const fileDir = beforePath || process.cwd();
     return resolve(join(fileDir, path));
 }
 
@@ -17,7 +21,10 @@ export const ERROR_CODES = {
     cdErr: 'FS_CD_ERR',
     catErr: 'FBO_CAT_ERR',
     addErr: 'FBO_ADD_ERR',
-    rnErr: "FBO_RN_ERR"
+    rnErr: "FBO_RN_ERR",
+    cpErr: "FBO_CP_ERR",
+    mvErr: "FBO_MV_ERR",
+    rmErr: "FBO_RM_ERR",
 }
 
 export const createError = (error, localCode = 'OPERATION_ERR', path, message = "Operation failed") => {

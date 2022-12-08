@@ -3,7 +3,8 @@ import process from 'node:process'
 import os from 'node:os'
 import {cd, ls, up} from "./src/file-system.js"
 import * as readline from 'node:readline/promises';
-import {add, cat, rn} from "./src/file-base-operations.js";
+import {add, cat, cp, rn, rm, mv} from "./src/file-base-operations.js";
+import {getOsFunction} from "./src/os-utils.js";
 
 const COMMANDS = {
     up: up,
@@ -11,7 +12,11 @@ const COMMANDS = {
     ls: ls,
     cat: cat,
     add: add,
-    rn: rn
+    rn: rn,
+    cp: cp,
+    rm: rm,
+    mv: mv,
+    os: getOsFunction,
 }
 
 const argvs = parseArgs()

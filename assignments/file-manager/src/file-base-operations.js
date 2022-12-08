@@ -1,6 +1,9 @@
 import {open, rename as renameFile} from "node:fs/promises";
-import {createError, ERROR_CODES, getFullPath, isFileExist} from "./utils/fileOperationUtils.js";
-import {parse} from "node:path";
+import { createReadStream, createWriteStream } from "node:fs";
+import {createError, ERROR_CODES, FILE_OPERATION_FLAGS, getFullPath, isFileExist} from "./utils/fileOperationUtils.js";
+import {join, parse} from "node:path";
+import { pipeline } from "node:stream"
+import fsPromise from "node:fs/promises";
 
 export const cat = async (pathToFile) => {
     const fullPathToFile = getFullPath(pathToFile);
@@ -64,3 +67,44 @@ export const rn = async (renamedFileName, newFileName) => {
         throw createError(err, ERROR_CODES.rnErr, pathToOriginalFile);
     }
 };
+
+export const cp = async (pathToCopyingFile, pathToNewFile) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const fullPathToCopyingFile = getFullPath(pathToCopyingFile);
+            const { base } = parse(fullPathToCopyingFile);
+            const fullPathToNewFile = getFullPath(join(pathToNewFile, base));
+            const fileReadStream = createReadStream(fullPathToCopyingFile);
+            const fileWriteStream = createWriteStream(fullPathToNewFile, { flags: FILE_OPERATION_FLAGS.openForWritingIfExist});
+            pipeline(fileReadStream, fileWriteStream, (error) => {
+               if (error) {
+                   reject(createError(error, ERROR_CODES.cpErr));
+               }
+                resolve();
+            });
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.log('error =>', error);
+            reject(createError(error, ERROR_CODES.cpErr));
+        }
+    })
+}
+
+export const rm = async (pathToRmFile) => {
+    try {
+        const fullPathToRmFile = getFullPath(pathToRmFile);
+        await fsPromise.rm(fullPathToRmFile);
+    } catch(error) {
+        throw createError(error, ERROR_CODES.rmErr)
+    }
+}
+
+export const mv = async (pathToCopyingFile, pathToNewFile) => {
+    try {
+        const fullPathToCopyingFile = getFullPath(pathToCopyingFile);
+        await cp(pathToCopyingFile, pathToNewFile);
+        await rm(fullPathToCopyingFile);
+    } catch (error) {
+        throw createError(error, ERROR_CODES.mvErr)
+    }
+}
