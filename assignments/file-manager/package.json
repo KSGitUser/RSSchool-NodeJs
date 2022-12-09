@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prestart": "node ./src/utils/checkNodeVersion.js",
+    "prestart:user": "node ./src/utils/checkNodeVersion.js",
     "start": "node index.js",
     "start:user": "node index.js -- --username=Djo"
   },
