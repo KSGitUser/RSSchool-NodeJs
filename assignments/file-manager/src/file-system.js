@@ -1,12 +1,9 @@
 import process from 'node:process';
 import {join, resolve, basename} from "node:path";
-import {access, readdir} from "node:fs/promises";
+import { readdir} from "node:fs/promises";
 import {createError, ERROR_CODES, getFullPath} from "./utils/fileOperationUtils.js";
 const isCanChangeDir = (pathToNewDir) => {
-    if (!!basename(pathToNewDir)) {
-        return true;
-    }
-    return false;
+    return !!basename(pathToNewDir);
 }
 
 export const up = () => {
@@ -25,7 +22,6 @@ export const up = () => {
 export const cd = async (path) => {
     const fullPath = getFullPath(path);
     try {
-        await access(resolve(fullPath));
         process.chdir(resolve(fullPath));
     } catch (error) {
         throw createError(error, ERROR_CODES.cdErr);
