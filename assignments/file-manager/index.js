@@ -48,8 +48,10 @@ rl.on("close", () => {
 rl.on("line", async (lineData) => {
   try {
     const [command, ...arg] = lineData.split(" ");
-    // eslint-disable-next-line no-console
-    console.log("arg =>", ...arg);
+    if (command === '.exit') {
+      rl.close();
+    }
+
     if (COMMANDS[command]) {
       await COMMANDS[command](...arg);
     } else {
