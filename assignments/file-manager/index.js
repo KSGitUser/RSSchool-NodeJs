@@ -6,6 +6,8 @@ import * as readline from "node:readline/promises";
 import { add, cat, cp, rn, rm, mv } from "./src/file-base-operations.js";
 import { getOsFunction } from "./src/os-utils.js";
 import { calculateHash } from "./src/hash.js";
+import { compress } from "./src/compress.js";
+import {decompress} from "./src/decompress.js";
 
 const COMMANDS = {
   up: up,
@@ -19,6 +21,8 @@ const COMMANDS = {
   mv: mv,
   os: getOsFunction,
   hash: calculateHash,
+  compress: compress,
+  decompress: decompress,
 };
 
 const argvs = parseArgs();
@@ -60,8 +64,4 @@ rl.on("line", async (lineData) => {
   }
   rl.setPrompt(prompt());
   rl.prompt();
-});
-
-process.stdout.on("error", (err) => {
-  console.log("My error");
 });
