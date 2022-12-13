@@ -57,9 +57,6 @@ export const ls = async () => {
         console.table(setDirectoryParam(files));
 
     } catch (err) {
-        if (err.code === "ENOENT") {
-            throw new Error("FS operation failed");
-        }
-        throw err;
+        throw throw createError(err, ERROR_CODES.lsErr);
     }
 };

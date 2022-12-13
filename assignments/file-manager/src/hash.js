@@ -1,5 +1,5 @@
 import { createReadStream } from "node:fs";
-import { getFullPath } from "./utils/fileOperationUtils.js";
+import {createError, ERROR_CODES, getFullPath} from "./utils/fileOperationUtils.js";
 import { createHash } from "node:crypto";
 export const calculateHash = async (pathToFile) => {
   try {
@@ -25,6 +25,6 @@ export const calculateHash = async (pathToFile) => {
       });
     });
   } catch (err) {
-    throw err;
+    throw throw createError(err, ERROR_CODES.hashErr);
   }
 };

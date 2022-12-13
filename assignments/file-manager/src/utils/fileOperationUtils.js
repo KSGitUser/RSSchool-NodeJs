@@ -19,6 +19,7 @@ export const ERROR_CODES = {
     operationErr: 'OPERATION_ERR',
     upErr: 'FS_UP_ERR',
     cdErr: 'FS_CD_ERR',
+    lsErr: 'FS_LS_ERR',
     catErr: 'FBO_CAT_ERR',
     addErr: 'FBO_ADD_ERR',
     rnErr: "FBO_RN_ERR",
@@ -26,7 +27,8 @@ export const ERROR_CODES = {
     mvErr: "FBO_MV_ERR",
     rmErr: "FBO_RM_ERR",
     compressErr: "COMPRESS_ERR",
-    decompressErr: "DECOMPRESS_ERR"
+    decompressErr: "DECOMPRESS_ERR",
+    hashErr: "HASH_ERR"
 }
 
 export const createError = (error, localCode = 'OPERATION_ERR', path, message = "Operation failed") => {
