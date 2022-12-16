@@ -57,6 +57,6 @@ export const ls = async () => {
         console.table(setDirectoryParam(files));
 
     } catch (err) {
-        throw throw createError(err, ERROR_CODES.lsErr);
+        throw createError(err, ERROR_CODES.lsErr);
     }
 };

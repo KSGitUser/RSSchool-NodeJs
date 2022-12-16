@@ -25,6 +25,6 @@ export const calculateHash = async (pathToFile) => {
       });
     });
   } catch (err) {
-    throw throw createError(err, ERROR_CODES.hashErr);
+    throw createError(err, ERROR_CODES.hashErr);
   }
 };
