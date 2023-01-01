@@ -35,6 +35,12 @@ const createItem = (userData: Omit<IUser, "id">) => {
 }
 
 const deleteItem = (id: User["id"]) => {
+    if (!id || !validate(id)) {
+        throw new BaseError(HTTP_RESPONSE_CODES.WRONG_UUID.code, HTTP_RESPONSE_CODES.WRONG_UUID.message())
+    }
+    if (!memDb.has(id)) {
+        throw new BaseError(HTTP_RESPONSE_CODES.NOT_EXIST.code, HTTP_RESPONSE_CODES.NOT_EXIST.message())
+    }
     return memDb.delete(id)
 }
 
@@ -46,6 +52,28 @@ const readItem = (id: User["id"]) => {
         throw new BaseError(HTTP_RESPONSE_CODES.NOT_EXIST.code, HTTP_RESPONSE_CODES.NOT_EXIST.message())
     }
     return memDb.get(id)
+}
+
+const updateItem = (userData: IUser) => {
+    if (!userData || !userData.id || !validate(userData.id)) {
+        throw new BaseError(HTTP_RESPONSE_CODES.WRONG_UUID.code, HTTP_RESPONSE_CODES.WRONG_UUID.message())
+    }
+    if (!memDb.has(userData.id)) {
+        throw new BaseError(HTTP_RESPONSE_CODES.NOT_EXIST.code, HTTP_RESPONSE_CODES.NOT_EXIST.message())
+    }
+
+    try {
+        const oldUser: User = memDb.get(userData.id);
+        const newUser: User = new User({...oldUser, ...userData})
+
+        memDb.set(newUser.id, newUser)
+        return newUser
+    } catch (error: any) {
+        throw new BaseError(
+            HTTP_RESPONSE_CODES.NOT_ALL_REQUIRED_FIELDS.code,
+            HTTP_RESPONSE_CODES.NOT_ALL_REQUIRED_FIELDS.message(error.message)
+        )
+    }
 }
 
 const readAll = () => {
@@ -60,6 +88,7 @@ export default {
     createItem,
     deleteItem,
     readItem,
+    updateItem,
     getSize,
     readAll
 }

@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate, version } from 'uuid';
 
 export interface IUser {
     id: string;
@@ -12,7 +12,7 @@ export class User implements IUser {
     username: string;
     age: number;
     hobbies: string[];
-    constructor(userData: Omit<IUser, "id">) {
+    constructor(userData:IUser | Omit<IUser, "id">) {
         Reflect.ownKeys(this).forEach((key) => {
             if (key === 'id') {
                 return;
@@ -21,7 +21,9 @@ export class User implements IUser {
                 throw new Error(`No required field '${key as string}'`)
             }
         })
-        this.id = uuidv4();
+        this.id = (userData as IUser).id && validate((userData as IUser).id) && version((userData as IUser).id) === 4
+            ? (userData as IUser).id
+            : uuidv4();
         this.username = userData.username;
         this.age = userData.age;
         this.hobbies = userData.hobbies;
