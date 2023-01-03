@@ -1,11 +1,11 @@
 /// <reference lib="dom" />
-import { describe, it, beforeAll, afterAll, expect} from '@jest/globals';
+import { describe, it, expect} from '@jest/globals';
 import {startServer, closeServer} from "../src/start-server";
 
-describe('Test API',   () => {
+describe('Test API',    () => {
     beforeAll(() => startServer());
 
-     it('Get users', async ()=> {
+    it('Get users', async ()=> {
         try {
             const user = await fetch('http://localhost:3000/api/users').then(async data => {
                 return await data.json();
@@ -35,5 +35,5 @@ describe('Test API',   () => {
         }
     })
 
-    afterAll(()=>closeServer())
+    afterAll( (done) => { closeServer(done);});
 });

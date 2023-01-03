@@ -138,6 +138,6 @@ export const startServer = () => {
     console.log(`Server started at: http://localhost:${PORT}`)
 }
 
-export const closeServer = () => {
-    server.close();
+export const closeServer = (cb: () => void) => {
+    server.close(cb)
 }
