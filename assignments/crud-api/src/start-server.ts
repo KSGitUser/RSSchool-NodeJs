@@ -137,3 +137,7 @@ export const startServer = () => {
     server.listen(PORT);
     console.log(`Server started at: http://localhost:${PORT}`)
 }
+
+export const closeServer = () => {
+    server.close();
+}
