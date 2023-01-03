@@ -1,10 +1,11 @@
 /// <reference lib="dom" />
 import { describe, it, expect} from '@jest/globals';
 import {startServer, closeServer} from "../src/start-server";
+import {PATH_NAMES, PORT} from "../src/consts";
+
+const baseUrl = `http://localhost:${PORT}/${PATH_NAMES.USERS}`
 
 describe('Test API',    () => {
-
-
     const userDataWithoutId = {
         username: 'Joh',
         age: 23,
@@ -15,7 +16,7 @@ describe('Test API',    () => {
 
     it('Get users', async ()=> {
         try {
-            const user = await fetch('http://localhost:3000/api/users').then(async data => {
+            const user = await fetch(baseUrl).then(async data => {
                 return await data.json();
             })
             expect(user).toMatchObject([])
@@ -26,7 +27,7 @@ describe('Test API',    () => {
 
     it('Post user', async ()=> {
         try {
-            const createdUser = await fetch('http://localhost:3000/api/users', { method: 'POST', body: JSON.stringify(userDataWithoutId)}).then(async data => {
+            const createdUser = await fetch(baseUrl, { method: 'POST', body: JSON.stringify(userDataWithoutId)}).then(async data => {
                 return await data.json();
             })
             expect(createdUser).toHaveProperty('id');
@@ -40,7 +41,7 @@ describe('Test API',    () => {
 
     it('Get created users', async ()=> {
         try {
-            const user = await fetch(`http://localhost:3000/api/users/${createdId.id}`).then(async data => {
+            const user = await fetch(`${baseUrl}/${createdId.id}`).then(async data => {
                 return await data.json();
             })
             expect(user).toMatchObject({ ...userDataWithoutId, ...createdId});
@@ -52,7 +53,7 @@ describe('Test API',    () => {
     it('Put user new data', async ()=> {
         const userData = { ...userDataWithoutId, age: 46}
         try {
-            const user = await fetch(`http://localhost:3000/api/users/${createdId.id}`,
+            const user = await fetch(`${baseUrl}/${createdId.id}`,
                 { method: 'PUT', body: JSON.stringify(userData)})
                 .then(async data => {
                 return await data.json();
@@ -65,7 +66,7 @@ describe('Test API',    () => {
 
     it('Delete user', async ()=> {
         try {
-            const responseData = await fetch(`http://localhost:3000/api/users/${createdId.id}`,
+            const responseData = await fetch(`${baseUrl}/${createdId.id}`,
                 { method: 'DELETE'})
                 .then(async data => {
                     return await data.text();
@@ -78,7 +79,7 @@ describe('Test API',    () => {
 
     it('Get deleted user', async ()=> {
         try {
-            const responseData = await fetch(`http://localhost:3000/api/users/${createdId.id}`).then(async data => {
+            const responseData = await fetch(`${baseUrl}/${createdId.id}`).then(async data => {
                 return await data.json();
             })
             expect(responseData).toHaveProperty('code');

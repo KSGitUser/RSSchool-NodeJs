@@ -2,15 +2,11 @@ import http from "node:http"
 import dataBase from "./db/dataBase.js";
 import BaseError from "./errors/BaseError.js";
 import url from 'node:url';
-const PORT =  3000
+import {PATH_NAMES, PORT} from './consts.js';
 // const db = {}
 const { STATUS_CODES } = http
 
-const BASE_API = 'api'
 
-const PATHNAMES = {
-    USERS: `${BASE_API}/users`
-}
 
 // const getUuidFromPath = (pathname: string): string => {
 //     return pathname.split('/')?.[4] || '';
@@ -33,7 +29,7 @@ const server = http.createServer((req, res) => {
 
 
 
-    if (getBasePathname(pathnameArr) === PATHNAMES.USERS) {
+    if (getBasePathname(pathnameArr) === PATH_NAMES.USERS) {
         if (pathnameArr.length === 2) {
             if (req.method === "GET") {
                 const usersData = dataBase.readAll()
