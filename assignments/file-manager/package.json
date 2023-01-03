@@ -1,0 +1,27 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "RSShool task2 file-manager",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "node ./src/utils/checkNodeVersion.js",
+    "prestart:user": "node ./src/utils/checkNodeVersion.js",
+    "start": "node index.js",
+    "start:user": "node index.js -- --username=Djo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KSGitUser/RSSchool-nodejs.git"
+  },
+  "author": "KSGitUser",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KSGitUser/RSSchool-nodejs/issues"
+  },
+  "homepage": "https://github.com/KSGitUser/RSSchool-nodejs#readme",
+  "engines": {
+    "node": ">=18.12.1"
+  }
+}
