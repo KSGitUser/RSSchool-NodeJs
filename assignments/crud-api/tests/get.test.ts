@@ -3,6 +3,14 @@ import { describe, it, expect} from '@jest/globals';
 import {startServer, closeServer} from "../src/start-server";
 
 describe('Test API',    () => {
+
+
+    const userDataWithoutId = {
+        username: 'Joh',
+        age: 23,
+        hobbies: ['teaching']
+    };
+    let createdId = { id: ''};
     beforeAll(() => startServer());
 
     it('Get users', async ()=> {
@@ -17,23 +25,73 @@ describe('Test API',    () => {
     });
 
     it('Post user', async ()=> {
-        const mockedUser = {
-            username: 'Joh',
-            age: 23,
-            hobbies: ['teaching']
-        }
-
         try {
-            const createdUser = await fetch('http://localhost:3000/api/users', { method: 'POST', body: JSON.stringify(mockedUser)}).then(async data => {
+            const createdUser = await fetch('http://localhost:3000/api/users', { method: 'POST', body: JSON.stringify(userDataWithoutId)}).then(async data => {
                 return await data.json();
             })
             expect(createdUser).toHaveProperty('id');
             const userForTest = { username: createdUser.username, age: createdUser.age, hobbies: createdUser.hobbies};
-            expect(mockedUser).toMatchObject(userForTest);
+            expect(userDataWithoutId).toMatchObject(userForTest);
+            createdId.id = createdUser.id;
         } catch(error) {
             throw error;
         }
     })
+
+    it('Get created users', async ()=> {
+        try {
+            const user = await fetch(`http://localhost:3000/api/users/${createdId.id}`).then(async data => {
+                return await data.json();
+            })
+            expect(user).toMatchObject({ ...userDataWithoutId, ...createdId});
+        } catch(error) {
+            throw error;
+        }
+    });
+
+    it('Put user new data', async ()=> {
+        const userData = { ...userDataWithoutId, age: 46}
+        try {
+            const user = await fetch(`http://localhost:3000/api/users/${createdId.id}`,
+                { method: 'PUT', body: JSON.stringify(userData)})
+                .then(async data => {
+                return await data.json();
+            })
+            expect(user).toMatchObject({ ...userData, ...createdId});
+        } catch(error) {
+            throw error;
+        }
+    });
+
+    it('Delete user', async ()=> {
+        try {
+            const responseData = await fetch(`http://localhost:3000/api/users/${createdId.id}`,
+                { method: 'DELETE'})
+                .then(async data => {
+                    return await data.text();
+                })
+            expect(responseData).toEqual(`User with id:${createdId.id} was deleted`);
+        } catch(error) {
+            throw error;
+        }
+    });
+
+    it('Get deleted user', async ()=> {
+        try {
+            const responseData = await fetch(`http://localhost:3000/api/users/${createdId.id}`).then(async data => {
+                return await data.json();
+            })
+            expect(responseData).toHaveProperty('code');
+            expect(responseData).toHaveProperty('message');
+            expect(responseData.code).toEqual(404);
+            expect(responseData.message).toEqual('Not Found - Record not exist');
+        } catch(error) {
+            throw error;
+        }
+    });
+
+
+
 
     afterAll( (done) => { closeServer(done);});
 });

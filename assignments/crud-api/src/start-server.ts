@@ -110,7 +110,7 @@ const server = http.createServer((req, res) => {
             if (req.method === "DELETE") {
                 try {
                     dataBase.deleteItem(pathUuid);
-                    res.end(`User with di:${pathUuid} was deleted`);
+                    res.end(`User with id:${pathUuid} was deleted`);
                     return;
                 } catch(error: any) {
                     res.statusCode = error.code || 400
