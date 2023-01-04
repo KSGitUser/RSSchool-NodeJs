@@ -4,7 +4,9 @@ import {startServer, closeServer} from "../src/start-server";
 import {PATH_NAMES, PORT} from "../src/consts";
 
 const baseUrl = `http://localhost:${PORT}/${PATH_NAMES.USERS}`
+beforeAll((done) => startServer(done));
 
+afterAll( (done) => closeServer(done));
 describe('Test API',    () => {
     const userDataWithoutId = {
         username: 'Joh',
@@ -12,7 +14,7 @@ describe('Test API',    () => {
         hobbies: ['teaching']
     };
     let createdId = { id: ''};
-    beforeAll(() => startServer());
+
 
     it('Get users', async ()=> {
         try {
@@ -66,12 +68,15 @@ describe('Test API',    () => {
 
     it('Delete user', async ()=> {
         try {
+            let responseStatus;
             const responseData = await fetch(`${baseUrl}/${createdId.id}`,
                 { method: 'DELETE'})
                 .then(async data => {
+                    responseStatus = data.status;
                     return await data.text();
                 })
-            expect(responseData).toEqual(`User with id:${createdId.id} was deleted`);
+            expect(responseStatus).toEqual(204)
+            expect(responseData).toEqual("");
         } catch(error) {
             throw error;
         }
@@ -90,9 +95,4 @@ describe('Test API',    () => {
             throw error;
         }
     });
-
-
-
-
-    afterAll( (done) => { closeServer(done);});
 });

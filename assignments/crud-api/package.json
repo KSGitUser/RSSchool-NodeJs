@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "start:dev": "nodemon",
     "start:prod": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js"
   },

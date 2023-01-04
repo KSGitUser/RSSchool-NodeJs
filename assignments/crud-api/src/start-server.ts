@@ -20,9 +20,6 @@ const getBasePathname = (pathnameArr:string[]):string => {
 }
 
 const server = http.createServer((req, res) => {
-    console.log("Server start")
-    // eslint-disable-next-line no-console
-    console.log('req.method =>', req.method);
     let { pathname } = url.parse(req?.url || '');
     pathname = (pathname || '').endsWith('/') ? (pathname || '').slice(1,-1) : (pathname || '');
     let pathnameArr: string[] = pathname.slice(1).split('/')
@@ -48,11 +45,16 @@ const server = http.createServer((req, res) => {
                     try {
                         const parsedData = JSON.parse(jsonString)
                         const userData = dataBase.createItem(parsedData);
+                        res.statusCode = 201;
                         res.end(JSON.stringify({...userData}));
                         return;
                     } catch(error: any) {
-                        res.statusCode = error.code || 400
-                        res.end(error.message)
+                        if (!error.code) {
+                            res.end((new BaseError(500, `${STATUS_CODES[500]} - ${error?.message}`)).stringify())
+                            return;
+                        }
+                        res.statusCode = error.code;
+                        res.end((error as BaseError).stringify())
                         return;
                     }
                 });
@@ -72,8 +74,12 @@ const server = http.createServer((req, res) => {
                     const userData = dataBase.readItem(pathUuid)
                     res.end(JSON.stringify({...userData}))
                     return;
-                } catch(error) {
+                } catch(error: any) {
                     if (error) {
+                        if (!error.code) {
+                            res.end((new BaseError(500, `${STATUS_CODES[500]} - ${error?.message}`)).stringify())
+                            return;
+                        }
                         res.statusCode = +(error as BaseError).code
                         res.end((error as BaseError).stringify())
                         return;
@@ -95,8 +101,12 @@ const server = http.createServer((req, res) => {
                         res.end(JSON.stringify({...userData}));
                         return;
                     } catch(error: any) {
-                        res.statusCode = error.code || 400
-                        res.end(error.message)
+                        if (!error.code) {
+                            res.end((new BaseError(500, `${STATUS_CODES[500]} - ${error?.message}`)).stringify())
+                            return;
+                        }
+                        res.statusCode = error.code;
+                        res.end((error as BaseError).stringify())
                         return;
                     }
                 });
@@ -106,11 +116,16 @@ const server = http.createServer((req, res) => {
             if (req.method === "DELETE") {
                 try {
                     dataBase.deleteItem(pathUuid);
-                    res.end(`User with id:${pathUuid} was deleted`);
+                    res.statusCode = 204
+                    res.end();
                     return;
                 } catch(error: any) {
-                    res.statusCode = error.code || 400
-                    res.end(error.message)
+                    if (!error.code) {
+                        res.end((new BaseError(500, `${STATUS_CODES[500]} - ${error?.message}`)).stringify())
+                        return;
+                    }
+                    res.statusCode = error.code;
+                    res.end((error as BaseError).stringify())
                     return;
                 }
             }
@@ -124,16 +139,12 @@ const server = http.createServer((req, res) => {
     }
     res.statusCode = 404;
     res.end((new BaseError(404, `${STATUS_CODES[404]} - wrong endpoint`)).stringify());
-
-
-    // res.end('Hello from server')
 })
 
-export const startServer = () => {
-    server.listen(PORT);
-    console.log(`Server started at: http://localhost:${PORT}`)
+export const startServer = (cb = () => console.log(`Server started at: http://localhost:${PORT}`)) => {
+    server.listen(PORT, cb);
 }
 
-export const closeServer = (cb: () => void) => {
-    server.close(cb)
+export const closeServer = (cb = () =>{}) => {
+    server.close(cb);
 }
