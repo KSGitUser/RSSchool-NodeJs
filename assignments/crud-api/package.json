@@ -7,7 +7,8 @@
   "scripts": {
     "test": "jest --runInBand",
     "start:dev": "nodemon",
-    "start:prod": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js"
+    "start:prod": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "start:multi": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
   },
   "keywords": [],
   "author": "KSGitUser",

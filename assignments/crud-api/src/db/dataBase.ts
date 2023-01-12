@@ -19,7 +19,7 @@ export const HTTP_RESPONSE_CODES = {
     }
 }
 
-export const memDb = new Map();
+export let memDb = new Map();
 
 const createItem = (userData: Omit<IUser, "id">) => {
     try {
@@ -84,11 +84,21 @@ const getSize = () => {
     return memDb.size;
 }
 
+const getDbEntries = () => {
+    return Object.fromEntries(memDb);
+}
+
+const mapFromEntries = (data:any) => {
+    memDb = new Map(Object.entries(data));
+}
+
 export default {
     createItem,
     deleteItem,
     readItem,
     updateItem,
     getSize,
-    readAll
+    readAll,
+    getDbEntries,
+    mapFromEntries,
 }

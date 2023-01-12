@@ -1,4 +1,3 @@
-/**  @type {import('@jest/types').Config.ProjectConfig} */
 const config = {
   transform: {
     "\\.[jt]s?$": ["ts-jest", {
