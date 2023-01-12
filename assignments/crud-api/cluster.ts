@@ -28,35 +28,18 @@ function masterProcess() {
     })
     let currentRequest = 1
 
-    http.createServer((req:any, res) => {
-        res.setHeader('Content-Type', 'application/json');
-        const headers = new Headers(req.headers)
+    http.createServer((req, res) => {
+        const headers = new Headers(req.headers as HeadersInit)
         const url = new URL(`http://${headers.get('host')}${req.url}`);
         url.port = 4000 + currentRequest + '';
-   
+
         if (currentRequest < numCPUs) {
             currentRequest += 1;
         } else {
             currentRequest = 1;
         }
-        let requestData = '';
-
-        req.on('data', (data:any) => {
-            requestData += data.toString();
-        })
-
-
-        req.on('end', async () => {
-           fetch(url, { body: req.method !== 'GET' ? requestData : null, method: req.method })
-               .then((result) => result.json())
-               .then((data) => res.end(JSON.stringify(data)));
-        })
-
-        res.on("finish", () => {
-            workers.forEach((worker:any) => {
-                worker.send({ data: JSON.stringify(innerDataBase.getDbEntries()) });
-            });
-        })
+        res.writeHead(307, {'Location': url.toString()});
+        res.end();
     }).listen(4000, ()=>console.log(`${4000} server`))
 }
 
