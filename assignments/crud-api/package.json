@@ -5,10 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "cp .env.example .env && jest --runInBand",
-    "start:dev": "cp .env.example .env && nodemon",
-    "start:prod": "cp .env.example .env && rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js",
-    "start:multi": "cp .env.example .env && rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
+    "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
+    "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
+    "test": "npm run copy-env && jest --runInBand",
+    "start:dev": "npm run copy-env && nodemon",
+    "start:prod": "npm run copy-env && npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "start:multi": "npm run copy-env && npm run delete-build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
   },
   "keywords": [],
   "author": "KSGitUser",
