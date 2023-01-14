@@ -8,9 +8,8 @@ const numCPUs = cpus().length - 1;
 
 let workers:any = [];
 let innerDataBase = dataBase;
+const mainPort = +(process.env['MULTI_PORT'] || 4000);
 function masterProcess() {
-    console.log(`Master ${process.pid} is running`);
-
     for (let i = 0; i < numCPUs; i++) {
         let worker = cluster.fork();
         workers.push(worker);
@@ -31,7 +30,7 @@ function masterProcess() {
     http.createServer((req, res) => {
         const headers = new Headers(req.headers as HeadersInit)
         const url = new URL(`http://${headers.get('host')}${req.url}`);
-        url.port = 4000 + currentRequest + '';
+        url.port = mainPort + currentRequest + '';
 
         if (currentRequest < numCPUs) {
             currentRequest += 1;
@@ -40,7 +39,7 @@ function masterProcess() {
         }
         res.writeHead(307, {'Location': url.toString()});
         res.end();
-    }).listen(4000, ()=>console.log(`${4000} server`))
+    }).listen(mainPort, ()=>console.log('\x1b[36m%s\x1b[0m',`Listen http://localhost:${4000} main server`))
 }
 
 function childProcess() {
@@ -48,7 +47,7 @@ function childProcess() {
         innerDataBase.mapFromEntries(JSON.parse(message.data));
     });
     const id = cluster?.worker?.id || 1
-    const port = 4000 + id;
+    const port = mainPort + id;
 
     http.createServer((req, res) => {
         serverHandler(req, res, innerDataBase)
@@ -61,7 +60,7 @@ function childProcess() {
                     data: JSON.stringify(innerDataBase.getDbEntries())
                 });
             })
-    }).listen(port, ()=>Promise.resolve(console.log(`Listener http://localhost:${port} server`)))
+    }).listen(port, ()=>Promise.resolve(console.log(`Listen http://localhost:${port} child server`)))
 }
 
 if (cluster.isPrimary) {

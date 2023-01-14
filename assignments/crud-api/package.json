@@ -5,14 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest --runInBand",
-    "start:dev": "nodemon",
-    "start:prod": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js",
-    "start:multi": "rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
+    "test": "cp .env.example .env && jest --runInBand",
+    "start:dev": "cp .env.example .env && nodemon",
+    "start:prod": "cp .env.example .env && rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "start:multi": "cp .env.example .env && rm -rf ./build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
   },
   "keywords": [],
   "author": "KSGitUser",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/jest": "^29.2.5",
@@ -28,5 +28,8 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">= 18.12"
   }
 }
