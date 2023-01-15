@@ -1,0 +1,30 @@
+{
+  "name": "remote-control-server",
+  "version": "1.0.0",
+  "description": "Task-4 RS-school node.js remote-control",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
+    "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
+    "test": "echo \"no test\"",
+    "start:dev": "npm run copy-env && nodemon"
+  },
+  "keywords": [],
+  "author": "KSGitUser",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/jest": "^29.2.5",
+    "@types/uuid": "^9.0.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  },
+  "engines": {
+    "node": ">= 18.12"
+  }
+}

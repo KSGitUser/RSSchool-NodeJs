@@ -1,2 +1,6 @@
 .idea/
 .dcignore
+
+node_modules
+
+build
