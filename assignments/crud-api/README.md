@@ -54,7 +54,7 @@ Run command:
 ```
 npm run start:multi
 ```
-By default it will start main server on port 4000 and other servers 4001, 4002 ... numOfCpus-1 
+By default, it will start main server on port 4000 and other servers on 4001, 4002 ... numOfCpus-1 
 
 ## Send requests
 
@@ -105,5 +105,5 @@ curl --location --request DELETE 'http://localhost:3000/api/users/267defc3-e4c6-
 ```
 
 ## Contacts 
-On on any questions you can contact me using Discord
+On any questions you can contact me using Discord
 `SergeyK(KSGitUser)#8867`
