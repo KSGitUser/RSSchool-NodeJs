@@ -8,7 +8,7 @@
     "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
     "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
     "test": "echo \"no test\"",
-    "start:dev": "npm run copy-env && nodemon"
+    "start:dev": "nodemon"
   },
   "keywords": [],
   "author": "KSGitUser",
@@ -22,7 +22,9 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "@nut-tree/nut-js": "^3.0.0",
+    "dotenv": "^16.0.3",
+    "ws": "^8.12.0"
   },
   "engines": {
     "node": ">= 18.12"
