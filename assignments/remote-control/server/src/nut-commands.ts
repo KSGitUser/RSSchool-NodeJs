@@ -1,5 +1,4 @@
 import { down, left, mouse, Point, right, up } from "@nut-tree/nut-js";
-import type { MouseClass } from "@nut-tree/nut-js";
 
 export enum COMMANDS {
   mouse_up = "mouse_up",
@@ -9,6 +8,7 @@ export enum COMMANDS {
   draw_rectangle = "draw_rectangle",
   draw_square = "draw_square",
   draw_circle = "draw_circle",
+  mouse_position = "mouse_position",
 }
 
 export const parseCommands = (
@@ -34,21 +34,24 @@ export const parseCommands = (
     }
   }
 
-  console.error("Wrong command");
-  return [undefined];
+  return [foundCommand];
 };
 
-const moveMouseUp = async (...args: number[]): Promise<MouseClass> =>
-  mouse.move(up(args[0] as number));
+const moveMouseUp = async (...args: number[]): Promise<void> => {
+  await mouse.move(up(args[0] as number));
+};
 
-const moveMouseDown = async (...args: number[]): Promise<MouseClass> =>
-  mouse.move(down(args[0] as number));
+const moveMouseDown = async (...args: number[]): Promise<void> => {
+  await mouse.move(down(args[0] as number));
+};
 
-const moveMouseLeft = async (...args: number[]): Promise<MouseClass> =>
-  mouse.move(left(args[0] as number));
+const moveMouseLeft = async (...args: number[]): Promise<void> => {
+  await mouse.move(left(args[0] as number));
+};
 
-const moveMouseRight = async (...args: number[]): Promise<MouseClass> =>
-  mouse.move(right(args[0] as number));
+const moveMouseRight = async (...args: number[]): Promise<void> => {
+  await mouse.move(right(args[0] as number));
+};
 
 const drawRectangle = async (...args: number[]): Promise<void> => {
   let [width, height] = args;
@@ -65,7 +68,7 @@ const drawRectangle = async (...args: number[]): Promise<void> => {
   await mouse.drag(up(height as number));
 };
 
-const drawCircle = async (...args: number[]) => {
+const drawCircle = async (...args: number[]): Promise<void> => {
   const [radius] = args;
   if (!radius) {
     return;
@@ -86,6 +89,15 @@ const drawCircle = async (...args: number[]) => {
   await mouse.drag(circlePath);
 };
 
+const mousePosition = async (): Promise<string> => {
+  const points = await mouse.getPosition();
+  const position = `${COMMANDS.mouse_position} ${Object.values(points).join(
+    ","
+  )}`;
+
+  return position;
+};
+
 export const nutFunctions = {
   [COMMANDS.mouse_up]: moveMouseUp,
   [COMMANDS.mouse_down]: moveMouseDown,
@@ -94,4 +106,5 @@ export const nutFunctions = {
   [COMMANDS.draw_rectangle]: drawRectangle,
   [COMMANDS.draw_square]: drawRectangle,
   [COMMANDS.draw_circle]: drawCircle,
+  [COMMANDS.mouse_position]: mousePosition,
 };
