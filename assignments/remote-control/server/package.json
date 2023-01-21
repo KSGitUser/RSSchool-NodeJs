@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:client": "node ../r-control/index.js",
+    "start:client": "npm run --prefix \"../r-control\" start",
     "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
     "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
     "test": "echo \"no test\"",
