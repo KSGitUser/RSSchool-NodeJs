@@ -1,4 +1,15 @@
-import { down, left, mouse, Point, right, up } from "@nut-tree/nut-js";
+import {
+  down,
+  left,
+  mouse,
+  Point,
+  Region,
+  right,
+  screen,
+  up,
+} from "@nut-tree/nut-js";
+
+import Jimp from "jimp";
 
 export enum COMMANDS {
   mouse_up = "mouse_up",
@@ -9,6 +20,7 @@ export enum COMMANDS {
   draw_square = "draw_square",
   draw_circle = "draw_circle",
   mouse_position = "mouse_position",
+  prnt_scrn = "prnt_scrn",
 }
 
 export const parseCommands = (
@@ -75,7 +87,7 @@ const drawCircle = async (...args: number[]): Promise<void> => {
   }
   const { x: centerX, y: centerY } = await mouse.getPosition();
 
-  const numPoints = 90;
+  const numPoints = 1440;
   await moveMouseRight(radius);
 
   const circlePath = [];
@@ -98,6 +110,18 @@ const mousePosition = async (): Promise<string> => {
   return position;
 };
 
+const prntScrn = async (): Promise<string> => {
+  const points = await mouse.getPosition();
+  const regionToGrab = new Region(points.x - 100, points.y - 100, 200, 200);
+  const region = await screen.grabRegion(regionToGrab);
+  const image = new Jimp(region);
+
+  const base64string = await image.getBase64Async(Jimp.MIME_PNG);
+  const base64prefixFree = base64string.replace("data:image/png;base64,", "");
+
+  return `${COMMANDS.prnt_scrn} ${base64prefixFree}`;
+};
+
 export const nutFunctions = {
   [COMMANDS.mouse_up]: moveMouseUp,
   [COMMANDS.mouse_down]: moveMouseDown,
@@ -107,4 +131,5 @@ export const nutFunctions = {
   [COMMANDS.draw_square]: drawRectangle,
   [COMMANDS.draw_circle]: drawCircle,
   [COMMANDS.mouse_position]: mousePosition,
+  [COMMANDS.prnt_scrn]: prntScrn,
 };
