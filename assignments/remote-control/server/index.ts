@@ -8,9 +8,7 @@ wss.on("connection", function connection(ws) {
     decodeStrings: false,
   });
   ws.on("message", function message(data) {
-    console.log("received: %s", data);
     const [command, ...args] = parseCommands(data.toString());
-
     if (!command) return;
     (async () => {
       const result = await nutFunctions[command](...args);
@@ -19,6 +17,4 @@ wss.on("connection", function connection(ws) {
       }
     })();
   });
-
-  // ws.send("mouse_up 10");
 });
