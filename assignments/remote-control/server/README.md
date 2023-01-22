@@ -21,9 +21,9 @@ Clone/download repo (command bellow clone `task-4/remote-control` branch  of rep
    ```shell
    cd RSSchool-nodejs/assignments/remote-control/server
    ```
-Install dependencies:
+Install dependencies on client and server by one command:
 
-`npm install`
+`npm run install-dep`
 
 ### Start server
 To start in dev mode run a command

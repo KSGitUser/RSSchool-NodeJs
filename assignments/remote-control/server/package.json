@@ -10,7 +10,8 @@
     "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
     "test": "echo \"no test\"",
     "start:dev": "nodemon",
-    "start:prod": "npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js"
+    "start:prod": "npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "install-dep": "npm --prefix '../r-control' install && npm install"
   },
   "keywords": [],
   "author": "KSGitUser",
