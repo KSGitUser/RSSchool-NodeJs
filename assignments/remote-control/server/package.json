@@ -9,7 +9,8 @@
     "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
     "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
     "test": "echo \"no test\"",
-    "start:dev": "nodemon"
+    "start:dev": "nodemon",
+    "start:prod": "npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js"
   },
   "keywords": [],
   "author": "KSGitUser",
