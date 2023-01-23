@@ -1,6 +1,5 @@
 .idea/
 .dcignore
 
-node_modules
-
 build
+node_modules
