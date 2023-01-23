@@ -5,12 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:client": "npm run --prefix \"../r-control\" start",
-    "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
-    "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
+    "start:client": "npm run --prefix '../r-control' start",
     "test": "echo \"no test\"",
     "start:dev": "nodemon",
-    "start:prod": "npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "start:prod": "tsc  --rootDir . --outDir build && node ./build/index.js",
     "install-dep": "npm --prefix '../r-control' install && npm install"
   },
   "keywords": [],
