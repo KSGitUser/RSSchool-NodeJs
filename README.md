@@ -17,6 +17,28 @@
 - [Assignment](assignments/remote-control/assignment.md)
 - [Scoring](assignments/remote-control/score.md)
 
+Code in folder `assignments/remote-control`
+Client in `assignments/remote-control/r-control`
+Server in `assignments/remote-control/server`
+
+#### To Start a project 
+From the root folder of this repository
+```shell
+cd assignments/remote-control/server
+```
+Start client, by default it will start on ```http://localhost:8181```
+
+```shell
+npm run start:client
+```
+Start server, by default ir will start on ```http://localhost:8080```
+
+```shell
+npm run start:dev
+```
+
+open in browser ```http://localhost:8181```
+
 ## GraphQL service
 - [Assignment](assignments/graphql-service/assignment.md)
 - [Scoring](assignments/graphql-service/score.md)
