@@ -8,7 +8,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
   fastify.get('/', async function (request, reply): Promise<ProfileEntity[]> {
-    return fastify.db.profiles.findMany();
+    try {
+      return await fastify.db.profiles.findMany();
+    } catch (e) {
+      throw fastify.httpErrors.badRequest('No memberTypeId');
+    }
   });
 
   fastify.get(

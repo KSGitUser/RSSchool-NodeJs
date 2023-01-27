@@ -18,14 +18,18 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<PostEntity | null> {
+    async function (request, reply): Promise<PostEntity> {
       if (isUUID(request.params.id)) {
-        return (
-          fastify.db.posts.findOne({ key: 'id', equals: request.params.id }) ??
-          reply.notFound()
-        );
+        const foundedPost = await fastify.db.posts.findOne({
+          key: 'id',
+          equals: request.params.id,
+        });
+        if (!foundedPost) {
+          throw fastify.httpErrors.notFound('No post');
+        }
+        return foundedPost;
       }
-      throw fastify.httpErrors.badRequest('Non valid uuid');
+      throw fastify.httpErrors.notFound('Wrong uuid');
     }
   );
 

@@ -14,7 +14,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 ): Promise<void> => {
   fastify.register(fastifySensible);
   fastify.get('/', async function (request, reply): Promise<UserEntity[]> {
-    return fastify.db.users.findMany();
+    try {
+      return await fastify.db.users.findMany();
+    } catch (e) {
+      throw fastify.httpErrors.badRequest('No memberTypeId');
+    }
   });
 
   fastify.get(
@@ -26,15 +30,16 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     },
     async function (request, reply): Promise<UserEntity | null> {
       if (isUUID(request.params.id)) {
-        return (
-          fastify.db.users.findOne({
-            key: 'id',
-            equals: request.params.id,
-          }) ?? reply.notFound()
-        );
+        const foundUser = await fastify.db.users.findOne({
+          key: 'id',
+          equals: request.params.id,
+        });
+        if (foundUser) {
+          return foundUser;
+        }
+        throw fastify.httpErrors.notFound('No user');
       }
-      reply.badRequest();
-      return null;
+      throw fastify.httpErrors.notFound('Wrong uuid');
     }
   );
 
@@ -46,7 +51,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<UserEntity> {
-      return fastify.db.users.create(request.body);
+      try {
+        return await fastify.db.users.create(request.body);
+      } catch (e) {
+        throw fastify.httpErrors.badRequest('Error on post user');
+      }
     }
   );
 
@@ -59,10 +68,61 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     },
     async function (request, reply): Promise<UserEntity | null> {
       if (isUUID(request.params.id)) {
-        return fastify.db.users.delete(request.params.id) ?? reply.notFound();
+        try {
+          const deletedUser = await fastify.db.users.delete(request.params.id);
+          const foundUsers = await fastify.db.users.findMany({
+            key: 'subscribedToUserIds',
+            inArray: request.params.id,
+          });
+          const foundedIndexes = new Map();
+          foundUsers.forEach((user) => {
+            const foundIndex = user.subscribedToUserIds.indexOf(
+              request.params.id
+            );
+            if (foundIndex !== -1) {
+              foundedIndexes.set(user.id, [
+                ...user.subscribedToUserIds.splice(0, foundIndex),
+                ...user.subscribedToUserIds.splice(foundIndex + 1),
+              ]);
+            }
+          });
+          const foundedPromises: any = [];
+          Array.from(foundedIndexes.keys()).forEach((userId) => {
+            foundedPromises.push([
+              ...foundedPromises,
+              fastify.db.users.change(userId, {
+                subscribedToUserIds: foundedIndexes.get(userId),
+              }),
+            ]);
+          });
+          await Promise.all(foundedPromises);
+          const foundedProfile = await fastify.db.profiles.findOne({
+            key: 'userId',
+            equals: request.params.id,
+          });
+          if (foundedProfile) {
+            await fastify.db.profiles.delete(foundedProfile.id);
+          }
+          const foundedPosts = await fastify.db.posts.findMany({
+            key: 'userId',
+            equals: request.params.id,
+          });
+          if (foundedPosts.length) {
+            const removePostsPromises: any = [];
+            foundedPosts.forEach((post) => {
+              removePostsPromises.push([
+                ...removePostsPromises,
+                fastify.db.posts.delete(post.id),
+              ]);
+            });
+            await Promise.all(removePostsPromises);
+          }
+          return deletedUser;
+        } catch (e) {
+          throw fastify.httpErrors.badRequest('Error on post user');
+        }
       }
-      reply.badRequest();
-      return null;
+      throw fastify.httpErrors.badRequest('Wrong delete UUID');
     }
   );
 
@@ -75,21 +135,27 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<UserEntity | null> {
-      if (isUUID(request.params.id)) {
+      if (isUUID(request.body.userId) && isUUID(request.params.id)) {
         const foundUser = await fastify.db.users.findOne({
           key: 'id',
-          equals: request.params.id,
+          equals: request.body.userId,
         });
         if (foundUser) {
-          foundUser.subscribedToUserIds.push(request.body.userId);
-          return foundUser;
+          const changedUser = await fastify.db.users.change(
+            request.body.userId,
+            {
+              subscribedToUserIds: [
+                ...foundUser.subscribedToUserIds,
+                request.params.id,
+              ],
+            }
+          );
+          return changedUser;
         } else {
-          reply.notFound();
-          return null;
+          throw fastify.httpErrors.notFound('Not found user');
         }
       }
-      reply.badRequest();
-      return null;
+      throw fastify.httpErrors.notFound('Wrong uuid');
     }
   );
 
@@ -102,25 +168,33 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<UserEntity | null> {
-      if (isUUID(request.params.id)) {
+      if (isUUID(request.params.id) && isUUID(request.body.userId)) {
         const foundUser = await fastify.db.users.findOne({
           key: 'id',
-          equals: request.params.id,
+          equals: request.body.userId,
         });
         if (foundUser) {
-          foundUser.subscribedToUserIds.find((userId, index) => {
-            if (request.body.userId === userId) {
-              foundUser.subscribedToUserIds.splice(index, 1);
+          const foundIndex = foundUser.subscribedToUserIds.indexOf(
+            request.params.id
+          );
+          if (foundIndex === -1) {
+            throw fastify.httpErrors.badRequest('No user with subscription');
+          }
+          const changedUser = await fastify.db.users.change(
+            request.body.userId,
+            {
+              subscribedToUserIds: [
+                ...foundUser.subscribedToUserIds.splice(0, foundIndex),
+                ...foundUser.subscribedToUserIds.splice(foundIndex + 1),
+              ],
             }
-          });
-          return foundUser;
+          );
+          return changedUser;
         } else {
-          reply.notFound();
-          return null;
+          throw fastify.httpErrors.notFound('Wrong uuid');
         }
       }
-      reply.badRequest();
-      return null;
+      throw fastify.httpErrors.notFound('Wrong uuid');
     }
   );
 
@@ -135,12 +209,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     async function (request, reply): Promise<UserEntity | undefined> {
       if (isUUID(request.params.id)) {
         try {
-          return fastify.db.users.change(request.params.id, request.body);
+          return await fastify.db.users.change(request.params.id, request.body);
         } catch (e) {
-          reply.notFound(`No post with ${request.params.id}`);
+          throw fastify.httpErrors.badRequest('Error on user patch');
         }
       }
-      reply.badRequest();
+      throw fastify.httpErrors.badRequest('Wrong uuid');
     }
   );
 };
