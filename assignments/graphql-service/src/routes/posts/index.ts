@@ -8,7 +8,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
   fastify.get('/', async function (request, reply): Promise<PostEntity[]> {
-    return fastify.db.posts.findMany();
+    try {
+      return await fastify.db.posts.findMany();
+    } catch (e) {
+      throw fastify.httpErrors.badRequest('Bad request on findMany posts');
+    }
   });
 
   fastify.get(
@@ -29,7 +33,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         }
         return foundedPost;
       }
-      throw fastify.httpErrors.notFound('Wrong uuid');
+      throw fastify.httpErrors.notFound('Wrong post uuid in get');
     }
   );
 
@@ -41,7 +45,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      return fastify.db.posts.create(request.body);
+      try {
+        return await fastify.db.posts.create(request.body);
+      } catch (e) {
+        throw fastify.httpErrors.badRequest('Bad request on post posts');
+      }
     }
   );
 
@@ -54,10 +62,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     },
     async function (request, reply): Promise<PostEntity | null> {
       if (isUUID(request.params.id)) {
-        return fastify.db.posts.delete(request.params.id) ?? reply.notFound();
+        try {
+          return await fastify.db.posts.delete(request.params.id);
+        } catch (e) {
+          throw fastify.httpErrors.badRequest('Error on posts delete');
+        }
       }
-      reply.badRequest();
-      return null;
+      throw fastify.httpErrors.badRequest('Wrong UUID on posts delete');
     }
   );
 
@@ -72,12 +83,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     async function (request, reply): Promise<PostEntity | undefined> {
       if (isUUID(request.params.id)) {
         try {
-          return fastify.db.posts.change(request.params.id, request.body);
+          return await fastify.db.posts.change(request.params.id, request.body);
         } catch (e) {
-          reply.notFound(`No post with ${request.params.id}`);
+          throw fastify.httpErrors.badRequest('Error on posts patch');
         }
       }
-      reply.badRequest();
+      throw fastify.httpErrors.badRequest('Wrong UUID on posts patch');
     }
   );
 };
