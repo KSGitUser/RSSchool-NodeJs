@@ -20,12 +20,17 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<MemberTypeEntity | null> {
-      return (
-        fastify.db.memberTypes.findOne({
-          key: 'id',
-          equals: request.params.id,
-        }) ?? reply.notFound(`No member type with ${request.params.id}`)
-      );
+      if (request.params.id === 'basic' || request.params.id === 'business') {
+        try {
+          return await fastify.db.memberTypes.findOne({
+            key: 'id',
+            equals: request.params.id,
+          });
+        } catch (e) {
+          throw fastify.httpErrors.notFound('Error on get member types');
+        }
+      }
+      throw fastify.httpErrors.notFound('Wrong ID');
     }
   );
 
@@ -38,11 +43,17 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<MemberTypeEntity | undefined> {
-      try {
-        return fastify.db.memberTypes.change(request.params.id, request.body);
-      } catch (e) {
-        reply.notFound(`No member type with ${request.params.id}`);
+      if (request.params.id === 'basic' || request.params.id === 'business') {
+        try {
+          return await fastify.db.memberTypes.change(
+            request.params.id,
+            request.body
+          );
+        } catch (e) {
+          throw fastify.httpErrors.badRequest('Error on Member Type patch');
+        }
       }
+      throw fastify.httpErrors.badRequest('Wrong ID');
     }
   );
 };
