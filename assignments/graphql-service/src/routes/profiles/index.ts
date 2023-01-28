@@ -94,7 +94,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<ProfileEntity | undefined> {
+    async function (request, reply): Promise<ProfileEntity> {
       if (isUUID(request.params.id)) {
         try {
           const result = await fastify.db.profiles.change(request.params.id, {
