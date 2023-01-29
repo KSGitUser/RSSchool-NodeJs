@@ -133,7 +133,7 @@ export const userSubscribeToHandler = async (
 export const unsubscribeUserFromHandler = async (
   fastify: FastifyInstance,
   args: { id: string; userId: string }
-) => {
+): Promise<UserEntity> => {
   const { id, userId } = args; // request.params.id, request.body.userId
   if (isUUID(id) && isUUID(userId)) {
     const foundUser = await fastify.db.users.findOne({
@@ -162,7 +162,7 @@ export const unsubscribeUserFromHandler = async (
 export const changeUserHandler = async (
   fastify: FastifyInstance,
   args: { id: string; fieldsToChange: ChangeUserDTO }
-) => {
+): Promise<UserEntity> => {
   const { id, fieldsToChange } = args;
   if (isUUID(id)) {
     try {
@@ -178,15 +178,28 @@ export const changeUserHandler = async (
 export const usersSubscribedToHandler = async (
   fastify: FastifyInstance,
   args: { id: string }
-) => {
+): Promise<UserEntity[]> => {
   if (isUUID(args.id)) {
     const foundedUsers = await fastify.db.users.findMany({
       key: 'subscribedToUserIds',
       inArray: args.id,
     });
-    // eslint-disable-next-line no-console
-    console.log('foundedUsers =>', foundedUsers);
     return foundedUsers;
   }
   throw fastify.httpErrors.badRequest('Wrong uuid');
+};
+
+export const subscribedToUserHandler = async (
+  fastify: FastifyInstance,
+  args: { subscribedIds: string[] }
+): Promise<UserEntity[]> => {
+  try {
+    const foundedUsers = await fastify.db.users.findMany({
+      key: 'id',
+      equalsAnyOf: args.subscribedIds,
+    });
+    return foundedUsers;
+  } catch (e) {
+    throw fastify.httpErrors.badRequest('Error on subscribedToUserHandler');
+  }
 };

@@ -248,9 +248,161 @@ query {
 }
 ```
 2.6. Get user by id with his subscribedToUser, posts.
+```
+query getAllInstances {
+    getUserById (id: "0e91fd9a-515a-4d3d-9b37-c593e96c243b") {
+         id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        subscribedToUser {
+            id
+            firstName
+            lastName
+            email
+            userPosts {
+                id
+            }
+        }
+    }
+}
+```
+response example
+```
+{
+    "data": {
+        "getUserById": {
+            "id": "0e91fd9a-515a-4d3d-9b37-c593e96c243b",
+            "firstName": "Mike",
+            "lastName": "Malkovich",
+            "email": "john@malkovich.com",
+            "subscribedToUserIds": [
+                "fbec5f38-4e4c-441a-a166-75c67fa6dcc6"
+            ],
+            "subscribedToUser": [
+                {
+                    "id": "fbec5f38-4e4c-441a-a166-75c67fa6dcc6",
+                    "firstName": "Mike",
+                    "lastName": "Malkovich",
+                    "email": "john@malkovich.com",
+                    "userPosts": [
+                        {
+                            "id": "a0a3c92a-e094-4653-9f7a-0653c5c4478e"
+                        },
+                        {
+                            "id": "f7704afc-0898-41ac-945f-83e34a3ff60a"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
 2.7. Get users with their userSubscribedTo, subscribedToUser 
 (additionally for each user in userSubscribedTo, subscribedToUser add their userSubscribedTo, 
 subscribedToUser).
+```
+query {
+  allUsers {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        usersSubscribedTo {
+            id
+            firstName
+            lastName
+            usersSubscribedTo {
+                id
+                firstName
+                lastName
+            }
+            subscribedToUser {
+                id
+                firstName
+                lastName
+            }
+        }
+        subscribedToUser {
+            id
+            firstName
+            lastName
+            email
+            usersSubscribedTo {
+                id
+                firstName
+                lastName
+            }
+            subscribedToUser {
+                id
+                firstName
+                lastName
+            }
+        }
+    }
+}
+```
+response example
+```JSON
+{
+    "data": {
+        "allUsers": [
+            {
+                "id": "c9753328-96a3-48d2-b81b-21e8b6a50f7d",
+                "firstName": "Mike",
+                "lastName": "Malkovich",
+                "email": "john@malkovich.com",
+                "subscribedToUserIds": [],
+                "usersSubscribedTo": [
+                    {
+                        "id": "28e9ded5-6892-4093-99e6-0f48ed540ecd",
+                        "firstName": "John",
+                        "lastName": "Malkovich",
+                        "usersSubscribedTo": [],
+                        "subscribedToUser": [
+                            {
+                                "id": "c9753328-96a3-48d2-b81b-21e8b6a50f7d",
+                                "firstName": "Mike",
+                                "lastName": "Malkovich"
+                            }
+                        ]
+                    }
+                ],
+                "subscribedToUser": []
+            },
+            {
+                "id": "28e9ded5-6892-4093-99e6-0f48ed540ecd",
+                "firstName": "John",
+                "lastName": "Malkovich",
+                "email": "john@malkovich.com",
+                "subscribedToUserIds": [
+                    "c9753328-96a3-48d2-b81b-21e8b6a50f7d"
+                ],
+                "usersSubscribedTo": [],
+                "subscribedToUser": [
+                    {
+                        "id": "c9753328-96a3-48d2-b81b-21e8b6a50f7d",
+                        "firstName": "Mike",
+                        "lastName": "Malkovich",
+                        "email": "john@malkovich.com",
+                        "usersSubscribedTo": [
+                            {
+                                "id": "28e9ded5-6892-4093-99e6-0f48ed540ecd",
+                                "firstName": "John",
+                                "lastName": "Malkovich"
+                            }
+                        ],
+                        "subscribedToUser": []
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
 
 ###  Create gql requests:
 2.8. Create user. 
