@@ -26,6 +26,7 @@ import {
   fetchAllUsersHandler,
   fetchUserByIdHandler,
   postUserHandler,
+  unsubscribeUserFromHandler,
   userSubscribeToHandler,
 } from '../Handlers/users-handlers';
 import {
@@ -245,7 +246,6 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             },
             resolve: (root, args) => createPostHandler(fastify, { body: args }),
           },
-
           updateUser: {
             type: userType!,
             args: {
@@ -368,16 +368,38 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           userSubscribeTo: {
             type: userType,
             args: {
-              id: {
+              subscribeToUserId: {
                 type: new GraphQLNonNull(GraphQLString),
                 description: 'User Id to whom is subscribing',
               },
-              userId: {
+              subscriberUserId: {
                 type: new GraphQLNonNull(GraphQLString),
                 description: 'User Id who is subscribing',
               },
             },
-            resolve: (root, args) => userSubscribeToHandler(fastify, args),
+            resolve: (root, args) =>
+              userSubscribeToHandler(fastify, {
+                id: args.subscribeToUserId,
+                userId: args.subscriberUserId,
+              }),
+          },
+          userUnsubscribeFrom: {
+            type: userType,
+            args: {
+              unsubscribeFromUserId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'User Id from whom is unsubscribing',
+              },
+              unsubscriberUserId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'User Id who is unsubscribing',
+              },
+            },
+            resolve: (root, args) =>
+              unsubscribeUserFromHandler(fastify, {
+                id: args.unsubscribeFromUserId,
+                userId: args.unsubscriberUserId,
+              }),
           },
         }),
       });

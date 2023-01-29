@@ -185,7 +185,68 @@ query {
 }
 ```
 2.4. Get user by id with his posts, profile, memberType.
+You should provide user Id
+```
+query {
+   getUserById (id: "973ab978-ca87-471d-9ade-f661416d8e3e"){
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+         userPosts {
+            id
+            content
+            userId
+        },
+        userProfiles {
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            memberTypeId
+            userId
+        }
+        userMemberTypes {
+            id
+            discount
+            monthPostsLimit
+        },
+   }
+}
+```
 2.5. Get users with their userSubscribedTo, profile.
+```
+query {
+   allUsers {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        usersSubscribedTo {
+            id
+            firstName
+            lastName
+            email
+            userProfiles {
+                id
+                avatar
+                sex
+                birthday
+                country
+                street
+                city
+                memberTypeId
+                userId
+            }
+        }
+   }
+}
+```
 2.6. Get user by id with his subscribedToUser, posts.
 2.7. Get users with their userSubscribedTo, subscribedToUser 
 (additionally for each user in userSubscribedTo, subscribedToUser add their userSubscribedTo, 
@@ -327,5 +388,35 @@ mutation {
 }
 ```
 2.16. Subscribe to; unsubscribe from.
+```
+mutation {
+    userSubscribeTo (
+        subscribeToUserId: "70c8ee33-034a-4b55-b774-a3a589c0bf62",
+        subscriberUserId: "98af25ac-12e1-45ac-bee9-5fde3e977890"
+    ) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+    }
+}
+```
+unsubscribe from.
+```
+mutation {
+    userUnsubscribeFrom (
+        unsubscribeFromUserId: "70c8ee33-034a-4b55-b774-a3a589c0bf62",
+        unsubscriberUserId: "98af25ac-12e1-45ac-bee9-5fde3e977890"
+    ) {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+    }
+}
+```
+
 2.17. InputObjectType for DTOs.
 

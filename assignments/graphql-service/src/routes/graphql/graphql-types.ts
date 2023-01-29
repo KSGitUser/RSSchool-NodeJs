@@ -9,6 +9,8 @@ import {
 import { fetchAllPostsByUserId } from '../Handlers/posts-handlers';
 import { fetchAllProfilesByUserIdHandler } from '../Handlers/profiles-handlers';
 import { fetchAllMemberTypesByUserIdHandler } from '../Handlers/member-types-handlers';
+import { usersSubscribedToHandler } from '../Handlers/users-handlers';
+import { FastifyInstance } from 'fastify';
 
 export const postType = new GraphQLObjectType({
   name: 'Post',
@@ -45,68 +47,94 @@ export const postType = new GraphQLObjectType({
   }),
 });
 
-export const userType = new GraphQLObjectType({
-  name: 'User',
-  description: 'User type',
-  fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The id of user.',
-      resolve: (root) => {
-        return root.id;
+type TUserTypeTSource = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  subscribedToUserIds: string[];
+  userPosts: typeof postType;
+  userProfiles: typeof profileType;
+  userMemberTypes: typeof memberTypeType;
+  usersSubscribedTo: TUserTypeTSource[];
+};
+
+type TUserTypeTContext = {
+  fastify: FastifyInstance;
+};
+
+export const userType: GraphQLObjectType<TUserTypeTSource, TUserTypeTContext> =
+  new GraphQLObjectType({
+    name: 'User',
+    description: 'User type',
+    fields: () => ({
+      id: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'The id of user.',
+        resolve: (root) => {
+          return root.id;
+        },
       },
-    },
-    firstName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The firstName of the user.',
-      resolve: (root) => {
-        return root.firstName;
+      firstName: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'The firstName of the user.',
+        resolve: (root) => {
+          return root.firstName;
+        },
       },
-    },
-    lastName: {
-      type: GraphQLString,
-      description: 'The lastName of the user.',
-      resolve: (root) => {
-        return root.lastName;
+      lastName: {
+        type: GraphQLString,
+        description: 'The lastName of the user.',
+        resolve: (root) => {
+          return root.lastName;
+        },
       },
-    },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The email of the user.',
-      resolve: (root) => {
-        return root.email;
+      email: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: 'The email of the user.',
+        resolve: (root) => {
+          return root.email;
+        },
       },
-    },
-    subscribedToUserIds: {
-      type: new GraphQLList(GraphQLString),
-      resolve: (root) => {
-        return root.subscribedToUserIds;
+      subscribedToUserIds: {
+        type: new GraphQLList(GraphQLString),
+        resolve: (root) => {
+          return root.subscribedToUserIds;
+        },
       },
-    },
-    userPosts: {
-      type: new GraphQLList(postType),
-      resolve: (root, args, context) => {
-        return fetchAllPostsByUserId(context.fastify, { userId: root.id });
+      userPosts: {
+        type: new GraphQLList(postType),
+        resolve: (root, args, context) => {
+          return fetchAllPostsByUserId(context.fastify, { userId: root.id });
+        },
       },
-    },
-    userProfiles: {
-      type: new GraphQLList(profileType),
-      resolve: (root, args, context) => {
-        return fetchAllProfilesByUserIdHandler(context.fastify, {
-          userId: root.id,
-        });
+      userProfiles: {
+        type: new GraphQLList(profileType),
+        resolve: (root, args, context) => {
+          return fetchAllProfilesByUserIdHandler(context.fastify, {
+            userId: root.id,
+          });
+        },
       },
-    },
-    userMemberTypes: {
-      type: new GraphQLList(memberTypeType),
-      resolve: (root, args, context) => {
-        return fetchAllMemberTypesByUserIdHandler(context.fastify, {
-          userId: root.id,
-        });
+      userMemberTypes: {
+        type: new GraphQLList(memberTypeType),
+        resolve: (root, args, context) => {
+          return fetchAllMemberTypesByUserIdHandler(context.fastify, {
+            userId: root.id,
+          });
+        },
       },
-    },
-  }),
-});
+      usersSubscribedTo: {
+        type: new GraphQLList(userType),
+        description: 'List of subscribed to users with full data',
+        resolve: (root, args, context) => {
+          return usersSubscribedToHandler(context.fastify, {
+            id: root.id,
+          });
+        },
+      },
+    }),
+  });
 
 export const memberTypesEnum = new GraphQLEnumType({
   name: 'MemberTypes',

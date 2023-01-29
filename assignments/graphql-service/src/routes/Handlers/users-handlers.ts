@@ -115,6 +115,9 @@ export const userSubscribeToHandler = async (
       key: 'id',
       equals: userId,
     });
+    if (foundUser?.subscribedToUserIds.includes(id)) {
+      throw fastify.httpErrors.badRequest('User already subscribed');
+    }
     if (foundUser) {
       const changedUser = await fastify.db.users.change(userId, {
         subscribedToUserIds: [...foundUser.subscribedToUserIds, id],
@@ -168,6 +171,22 @@ export const changeUserHandler = async (
     } catch (e: any) {
       throw fastify.httpErrors.badRequest(e?.message || 'Error on user patch');
     }
+  }
+  throw fastify.httpErrors.badRequest('Wrong uuid');
+};
+
+export const usersSubscribedToHandler = async (
+  fastify: FastifyInstance,
+  args: { id: string }
+) => {
+  if (isUUID(args.id)) {
+    const foundedUsers = await fastify.db.users.findMany({
+      key: 'subscribedToUserIds',
+      inArray: args.id,
+    });
+    // eslint-disable-next-line no-console
+    console.log('foundedUsers =>', foundedUsers);
+    return foundedUsers;
   }
   throw fastify.httpErrors.badRequest('Wrong uuid');
 };
