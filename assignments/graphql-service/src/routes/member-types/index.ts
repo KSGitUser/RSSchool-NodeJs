@@ -2,6 +2,11 @@ import { FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-json-sc
 import { idParamSchema } from '../../utils/reusedSchemas';
 import { changeMemberTypeBodySchema } from './schema';
 import type { MemberTypeEntity } from '../../utils/DB/entities/DBMemberTypes';
+import {
+  changeAMemberTypesHandler,
+  fetchAllMemberTypesHandler,
+  fetchAMemberTypesByIdHandler,
+} from '../Handlers/member-types-handlers';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -9,7 +14,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify.get('/', async function (request, reply): Promise<
     MemberTypeEntity[]
   > {
-    return fastify.db.memberTypes.findMany();
+    return fetchAllMemberTypesHandler(fastify);
   });
 
   fastify.get(
@@ -19,18 +24,8 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<MemberTypeEntity | null> {
-      if (request.params.id === 'basic' || request.params.id === 'business') {
-        try {
-          return await fastify.db.memberTypes.findOne({
-            key: 'id',
-            equals: request.params.id,
-          });
-        } catch (e) {
-          throw fastify.httpErrors.notFound('Error on get member types');
-        }
-      }
-      throw fastify.httpErrors.notFound('Wrong ID');
+    async function (request, reply): Promise<MemberTypeEntity> {
+      return fetchAMemberTypesByIdHandler(fastify, { id: request.params.id });
     }
   );
 
@@ -42,18 +37,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<MemberTypeEntity | undefined> {
-      if (request.params.id === 'basic' || request.params.id === 'business') {
-        try {
-          return await fastify.db.memberTypes.change(
-            request.params.id,
-            request.body
-          );
-        } catch (e) {
-          throw fastify.httpErrors.badRequest('Error on Member Type patch');
-        }
-      }
-      throw fastify.httpErrors.badRequest('Wrong ID');
+    async function (request, reply): Promise<MemberTypeEntity> {
+      return changeAMemberTypesHandler(fastify, {
+        id: request.params.id,
+        body: request.body,
+      });
     }
   );
 };
