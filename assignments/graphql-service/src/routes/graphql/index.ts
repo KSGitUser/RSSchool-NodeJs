@@ -1,8 +1,7 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-json-schema-to-ts';
 import { graphqlBodySchema } from './schema';
-// import { buildSchema } from 'graphql/utilities';
-// import { graphql } from 'graphql/graphql';
 import {
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -11,13 +10,14 @@ import {
 } from 'graphql/type';
 import { graphql } from 'graphql/graphql';
 import { fetchAllPostsHandler } from '../Handlers/posts-handlers';
-import { postType, userType } from './graphql-types';
+import { postType, profileType, userType } from './graphql-types';
 import {
   fetchAllUsersHandler,
   fetchUserByIdHandler,
   postUserHandler,
   userSubscribeToHandler,
 } from '../Handlers/users-handlers';
+import { createProfileHandler } from '../Handlers/profiles-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 //   fastify
@@ -111,7 +111,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       const mutationType = new GraphQLObjectType({
         name: 'Mutation',
         fields: () => ({
-          postUser: {
+          createUser: {
             type: userType!,
             args: {
               firstName: {
@@ -128,6 +128,45 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               },
             },
             resolve: (root, args) => postUserHandler(fastify, args),
+          },
+          createProfile: {
+            type: profileType!,
+            args: {
+              avatar: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Avatar in the profile.',
+              },
+              sex: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Sex in the profile.',
+              },
+              birthday: {
+                type: new GraphQLNonNull(GraphQLInt),
+                description: 'Birthday in the profile.',
+              },
+              country: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Country in the profile.',
+              },
+              street: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Street in the profile.',
+              },
+              city: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'City in the profile.',
+              },
+              memberTypeId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'MemberTypeId in the profile.',
+              },
+              userId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'UserId in the profile.',
+              },
+            },
+            resolve: (root, args) =>
+              createProfileHandler(fastify, { body: args }),
           },
           userSubscribeTo: {
             type: userType,

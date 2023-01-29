@@ -74,3 +74,55 @@ If you have chosen a non-default gql environment, then the connection of some fu
 Limit the complexity of the graphql queries by their depth with "graphql-depth-limit" package.  
 E.g. User can refer to other users via properties `userSubscribedTo`, `subscribedToUser` and users within them can also have `userSubscribedTo`, `subscribedToUser` and so on.  
 Your task is to add a new rule (created by "graphql-depth-limit") in [validation](https://graphql.org/graphql-js/validation/) to limit such nesting to (for example) 6 levels max.
+
+
+## Request examples:
+
+You should send a post request on dress `http://127.0.0.1:3000/graphql`
+All examples in GraphQl format of request. If You would like to send them line a body, you should change in to valid JSON
+
+###  Create gql requests:
+2.8. Create user. 
+```
+mutation {
+   createUser(firstName: "John", lastName: "Malkovich", email: "john@malkovich.com") {
+       id
+       firstName 
+       lastName
+          email
+        subscribedToUserIds
+     }
+}
+```
+
+2.9. Create profile.  
+
+In field userId you should type id of existing user. 
+
+```shell
+mutation {
+    createProfile(
+     avatar: "avatar",
+     sex: "male",
+     birthday: 10101990,
+     country: "USA",
+     street: "Fifth Avenue",
+     city: "New York",
+     memberTypeId: "basic",
+     userId: "8e5172f4-a23c-4171-8b42-a76db540710b"
+    ) {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+}
+```
+2.10. Create post.  
+2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.
+

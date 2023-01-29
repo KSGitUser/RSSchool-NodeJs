@@ -37,12 +37,21 @@ export const createProfileHandler = async (
   fastify: FastifyInstance,
   args: { body: CreateProfileDTO }
 ): Promise<ProfileEntity> => {
-  const isExistUser = await fastify.db.profiles.findOne({
-    key: 'userId',
-    equals: args.body.userId,
-  });
-  if (isExistUser) {
-    throw fastify.httpErrors.badRequest('Profile for user exist');
+  const [isExistUser, isProfileForUserExist] = await Promise.all([
+    await fastify.db.users.findOne({
+      key: 'id',
+      equals: args.body.userId,
+    }),
+    await fastify.db.profiles.findOne({
+      key: 'userId',
+      equals: args.body.userId,
+    }),
+  ]);
+  if (!isExistUser) {
+    throw fastify.httpErrors.badRequest('User for profile do not exist');
+  }
+  if (isProfileForUserExist) {
+    throw fastify.httpErrors.badRequest('Profile for this user exist');
   }
   const createdProfile = await fastify.db.profiles.create(args.body);
   if (
@@ -84,8 +93,8 @@ export const changeProfileHandler = async (
         throw fastify.httpErrors.notFound('Not found profile');
       }
       return result;
-    } catch (e) {
-      throw fastify.httpErrors.notFound('No profile');
+    } catch (e: any) {
+      throw fastify.httpErrors.notFound(e.message || 'No profile');
     }
   }
   throw fastify.httpErrors.badRequest('No valid profile Id');
