@@ -10,12 +10,13 @@ import {
   GraphQLString,
 } from 'graphql/type';
 import { graphql } from 'graphql/graphql';
-import { fetchAllPosts } from '../Handlers/posts-handlers';
+import { fetchAllPostsHandler } from '../Handlers/posts-handlers';
 import { postType, userType } from './graphql-types';
 import {
   fetchAllUsersHandler,
   fetchUserByIdHandler,
   postUserHandler,
+  userSubscribeToHandler,
 } from '../Handlers/users-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -88,7 +89,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           allPosts: {
             type: new GraphQLList(postType),
             args: {},
-            resolve: (root, args) => fetchAllPosts(fastify),
+            resolve: (root, args) => fetchAllPostsHandler(fastify),
           },
           allUsers: {
             type: new GraphQLList(userType),
@@ -126,7 +127,21 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'The email of the user.',
               },
             },
-            resolve: (_source, args) => postUserHandler(fastify, args),
+            resolve: (root, args) => postUserHandler(fastify, args),
+          },
+          userSubscribeTo: {
+            type: userType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'User Id to whom is subscribing',
+              },
+              userId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'User Id who is subscribing',
+              },
+            },
+            resolve: (root, args) => userSubscribeToHandler(fastify, args),
           },
         }),
       });
