@@ -75,6 +75,7 @@ export const changePostHandler = async (
 ): Promise<PostEntity> => {
   if (isUUID(args.id)) {
     try {
+      await fetchPostByIdHandler(fastify, { id: args.id });
       return await fastify.db.posts.change(args.id, args.body);
     } catch (e) {
       throw fastify.httpErrors.badRequest('Error on posts patch');

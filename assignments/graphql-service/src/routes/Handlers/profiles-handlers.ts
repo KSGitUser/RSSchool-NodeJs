@@ -86,6 +86,7 @@ export const changeProfileHandler = async (
 ): Promise<ProfileEntity> => {
   if (isUUID(args.id)) {
     try {
+      await fetchProfileByIdHandler(fastify, { id: args.id });
       const result = await fastify.db.profiles.change(args.id, {
         ...args.body,
       });

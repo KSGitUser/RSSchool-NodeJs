@@ -10,6 +10,7 @@ import {
 } from 'graphql/type';
 import { graphql } from 'graphql/graphql';
 import {
+  changePostHandler,
   createPostHandler,
   fetchAllPostsHandler,
 } from '../Handlers/posts-handlers';
@@ -21,7 +22,10 @@ import {
   postUserHandler,
   userSubscribeToHandler,
 } from '../Handlers/users-handlers';
-import { createProfileHandler } from '../Handlers/profiles-handlers';
+import {
+  changeProfileHandler,
+  createProfileHandler,
+} from '../Handlers/profiles-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 //   fastify
@@ -219,6 +223,71 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                   email: args.email,
                 },
               }),
+          },
+          updateProfile: {
+            type: profileType!,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString)!,
+                description: 'Profile id',
+              },
+              avatar: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Avatar in the profile.',
+              },
+              sex: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Sex in the profile.',
+              },
+              birthday: {
+                type: new GraphQLNonNull(GraphQLInt),
+                description: 'Birthday in the profile.',
+              },
+              country: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Country in the profile.',
+              },
+              street: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Street in the profile.',
+              },
+              city: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'City in the profile.',
+              },
+              memberTypeId: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'MemberTypeId in the profile.',
+              },
+            },
+            resolve: (root, args) => {
+              const { id, ...body } = args;
+              return changeProfileHandler(fastify, { id: id, body: body });
+            },
+          },
+          updatePost: {
+            type: postType!,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString)!,
+                description: 'The post id.',
+              },
+              title: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'The title of the post',
+              },
+              content: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'The content of the post.',
+              },
+            },
+            resolve: (root, args) => {
+              const { id, ...body } = args;
+              return changePostHandler(fastify, {
+                id: args.id,
+                body: body,
+              });
+            },
           },
           userSubscribeTo: {
             type: userType,

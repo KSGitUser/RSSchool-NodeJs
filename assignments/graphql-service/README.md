@@ -160,7 +160,47 @@ mutation {
 }
 ```
 2.13. Update profile.
+You should provide existing profile id
+```shell
+mutation {
+    updateProfile(
+        id: "eaed59ee-682d-468f-8955-b7d818dcc8be",
+        avatar: "avatar",
+        sex: "male",
+        birthday: 10101990,
+        country: "USA",
+        street: "Fifth Avenue",
+        city: "New York",
+        memberTypeId: "basic",
+    ) {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+    }
+}
+```
 2.14. Update post.
+You should provide existing post id
+```shell
+mutation {
+    updatePost (
+        id: "609c3a6f-a30d-41e3-bbad-46164d8c8e8c",
+        title: "New title",
+        content: "Updated content"
+    ) {
+        id
+        title
+        content
+        userId
+    }
+}
+```
 2.15. Update memberType.
 2.16. Subscribe to; unsubscribe from.
 2.17. InputObjectType for DTOs.
