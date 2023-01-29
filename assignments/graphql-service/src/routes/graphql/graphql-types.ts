@@ -165,3 +165,14 @@ export const memberTypeType = new GraphQLObjectType({
     },
   }),
 });
+
+// export const allDBInstancesType = new GraphQLObjectType({
+//   name: 'AllDBInstances',
+//   description:  'Users, Posts, Profiles, MemberTypes',
+//   fields: () => ({
+//     allUsers: {
+//       type: new GraphQLList(userType);
+//       resolve: () =>
+//     }
+//   })
+// })

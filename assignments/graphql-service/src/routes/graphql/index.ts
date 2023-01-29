@@ -30,8 +30,12 @@ import {
 import {
   changeProfileHandler,
   createProfileHandler,
+  fetchAllProfileHandler,
 } from '../Handlers/profiles-handlers';
-import { changeMemberTypesHandler } from '../Handlers/member-types-handlers';
+import {
+  changeMemberTypesHandler,
+  fetchAllMemberTypesHandler,
+} from '../Handlers/member-types-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 //   fastify
@@ -108,6 +112,14 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           allUsers: {
             type: new GraphQLList(userType),
             resolve: (root, args) => fetchAllUsersHandler(fastify),
+          },
+          allProfiles: {
+            type: new GraphQLList(profileType),
+            resolve: (root, args) => fetchAllProfileHandler(fastify),
+          },
+          allMemberTypes: {
+            type: new GraphQLList(memberTypeType),
+            resolve: (root, args) => fetchAllMemberTypesHandler(fastify),
           },
           getUserById: {
             type: userType,

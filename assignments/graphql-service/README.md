@@ -81,6 +81,50 @@ Your task is to add a new rule (created by "graphql-depth-limit") in [validation
 You should send a post request on dress `http://127.0.0.1:3000/graphql`
 All examples in GraphQl format of request. If You would like to send them line a body, you should change in to valid JSON
 
+###  Get gql requests:
+2.1. Get users, profiles, posts, memberTypes - 4 operations in one query.
+```shell
+query {
+   allUsers {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+   }
+   allProfiles {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+        }
+   allPosts {
+       id
+       id
+       content
+       userId
+   }
+   allMemberTypes {
+       id
+       discount
+       monthPostsLimit
+   }
+}
+```
+2.2. Get user, profile, post, memberType by id - 4 operations in one query.
+2.3. Get users with their posts, profiles, memberTypes.
+2.4. Get user by id with his posts, profile, memberType.
+2.5. Get users with their userSubscribedTo, profile.
+2.6. Get user by id with his subscribedToUser, posts.
+2.7. Get users with their userSubscribedTo, subscribedToUser 
+(additionally for each user in userSubscribedTo, subscribedToUser add their userSubscribedTo, 
+subscribedToUser).
+
 ###  Create gql requests:
 2.8. Create user. 
 ```
