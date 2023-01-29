@@ -140,4 +140,28 @@ mutation {
 }
 ```
 2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.
+All fields have type definition and description
+### Update gql requests:
+2.12. Update user.
+In id should be existing user id
+```shell
+mutation {
+   updateUser(
+       id: "5dfe436f-5729-489d-946f-3a12f7b4bf40",
+       firstName: "Mike", 
+       lastName: "Malkovich", 
+       email: "mike@malkovich.com") {
+        id
+        firstName 
+        lastName
+        email
+        subscribedToUserIds
+     }
+}
+```
+2.13. Update profile.
+2.14. Update post.
+2.15. Update memberType.
+2.16. Subscribe to; unsubscribe from.
+2.17. InputObjectType for DTOs.
 

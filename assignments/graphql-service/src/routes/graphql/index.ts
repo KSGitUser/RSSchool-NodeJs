@@ -15,6 +15,7 @@ import {
 } from '../Handlers/posts-handlers';
 import { postType, profileType, userType } from './graphql-types';
 import {
+  changeUserHandler,
   fetchAllUsersHandler,
   fetchUserByIdHandler,
   postUserHandler,
@@ -118,15 +119,15 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             type: userType!,
             args: {
               firstName: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: new GraphQLNonNull(GraphQLString)!,
                 description: 'The firstName of the user.',
               },
               lastName: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: new GraphQLNonNull(GraphQLString)!,
                 description: 'The lastName of the user.',
               },
               email: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: new GraphQLNonNull(GraphQLString)!,
                 description: 'The email of the user.',
               },
             },
@@ -189,6 +190,36 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             },
             resolve: (root, args) => createPostHandler(fastify, { body: args }),
           },
+          updateUser: {
+            type: userType!,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString)!,
+                description: 'The user id.',
+              },
+              firstName: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'The firstName of the user.',
+              },
+              lastName: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'The lastName of the user.',
+              },
+              email: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'The email of the user.',
+              },
+            },
+            resolve: (root, args) =>
+              changeUserHandler(fastify, {
+                id: args.id,
+                fieldsToChange: {
+                  firstName: args.firstName,
+                  lastName: args.lastName,
+                  email: args.email,
+                },
+              }),
+          },
           userSubscribeTo: {
             type: userType,
             args: {
@@ -211,12 +242,6 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         mutation: mutationType,
         types: [postType],
       });
-
-      // const source = `
-      //   query HeroNameQuery {
-      //     hero { name }
-      //   }
-      // `;
 
       // eslint-disable-next-line no-console
       console.log('request.body.query =>', request.body.query);

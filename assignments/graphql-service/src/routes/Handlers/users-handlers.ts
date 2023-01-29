@@ -163,9 +163,10 @@ export const changeUserHandler = async (
   const { id, fieldsToChange } = args;
   if (isUUID(id)) {
     try {
+      await fetchUserByIdHandler(fastify, { id: id });
       return await fastify.db.users.change(id, fieldsToChange);
-    } catch (e) {
-      throw fastify.httpErrors.badRequest('Error on user patch');
+    } catch (e: any) {
+      throw fastify.httpErrors.badRequest(e?.message || 'Error on user patch');
     }
   }
   throw fastify.httpErrors.badRequest('Wrong uuid');
