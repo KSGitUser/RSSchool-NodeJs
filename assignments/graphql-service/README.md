@@ -99,7 +99,7 @@ mutation {
 
 In field userId you should type id of existing user. 
 
-```shell
+```
 mutation {
     createProfile(
      avatar: "avatar",
@@ -125,7 +125,7 @@ mutation {
 ```
 2.10. Create post.  
 In field userId you should type id of existing user.
-```shell
+```
 mutation {
     createPost(
         title: "GraphQl example",
@@ -144,7 +144,7 @@ All fields have type definition and description
 ### Update gql requests:
 2.12. Update user.
 In id should be existing user id
-```shell
+```
 mutation {
    updateUser(
        id: "5dfe436f-5729-489d-946f-3a12f7b4bf40",
@@ -161,7 +161,7 @@ mutation {
 ```
 2.13. Update profile.
 You should provide existing profile id
-```shell
+```
 mutation {
     updateProfile(
         id: "eaed59ee-682d-468f-8955-b7d818dcc8be",
@@ -187,7 +187,7 @@ mutation {
 ```
 2.14. Update post.
 You should provide existing post id
-```shell
+```
 mutation {
     updatePost (
         id: "609c3a6f-a30d-41e3-bbad-46164d8c8e8c",
@@ -202,6 +202,20 @@ mutation {
 }
 ```
 2.15. Update memberType.
+Id of Member Type can be "basic" of "business"
+```
+mutation {
+    updateMemberType (
+        id: "basic",
+        discount: 1,
+        monthPostsLimit: 10
+    ) {
+        id
+        discount
+        monthPostsLimit
+    }
+}
+```
 2.16. Subscribe to; unsubscribe from.
 2.17. InputObjectType for DTOs.
 

@@ -33,7 +33,7 @@ export const postType = new GraphQLObjectType({
       },
     },
     userId: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The userId of the post.',
       resolve: (root) => {
         return root.userId;
@@ -54,7 +54,7 @@ export const userType = new GraphQLObjectType({
       },
     },
     firstName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The firstName of the user.',
       resolve: (root) => {
         return root.firstName;
@@ -68,7 +68,7 @@ export const userType = new GraphQLObjectType({
       },
     },
     email: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The email of the user.',
       resolve: (root) => {
         return root.email;
@@ -82,18 +82,6 @@ export const userType = new GraphQLObjectType({
     },
   }),
 });
-
-export type ProfileEntity = {
-  id: string;
-  avatar: string;
-  sex: string;
-  birthday: number;
-  country: string;
-  street: string;
-  city: string;
-  memberTypeId: string;
-  userId: string;
-};
 
 export const memberTypesEnum = new GraphQLEnumType({
   name: 'MemberTypes',
@@ -149,6 +137,31 @@ export const profileType = new GraphQLObjectType({
     userId: {
       type: GraphQLString,
       description: 'The user Id of profile',
+    },
+  }),
+});
+
+export type MemberTypeEntity = {
+  id: string;
+  discount: number;
+  monthPostsLimit: number;
+};
+
+export const memberTypeType = new GraphQLObjectType({
+  name: 'MemberType',
+  description: 'Member Type',
+  fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLString)!,
+      description: 'The id of Member Type',
+    },
+    discount: {
+      type: GraphQLInt,
+      description: 'The discount of of Member Type.',
+    },
+    monthPostsLimit: {
+      type: GraphQLInt,
+      description: 'Month post limits of Member Type',
     },
   }),
 });

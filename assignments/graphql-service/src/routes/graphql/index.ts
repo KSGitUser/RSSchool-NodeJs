@@ -14,7 +14,12 @@ import {
   createPostHandler,
   fetchAllPostsHandler,
 } from '../Handlers/posts-handlers';
-import { postType, profileType, userType } from './graphql-types';
+import {
+  memberTypeType,
+  postType,
+  profileType,
+  userType,
+} from './graphql-types';
 import {
   changeUserHandler,
   fetchAllUsersHandler,
@@ -26,6 +31,7 @@ import {
   changeProfileHandler,
   createProfileHandler,
 } from '../Handlers/profiles-handlers';
+import { changeMemberTypesHandler } from '../Handlers/member-types-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 //   fastify
@@ -123,15 +129,15 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             type: userType!,
             args: {
               firstName: {
-                type: new GraphQLNonNull(GraphQLString)!,
+                type: new GraphQLNonNull(GraphQLString),
                 description: 'The firstName of the user.',
               },
               lastName: {
-                type: new GraphQLNonNull(GraphQLString)!,
+                type: GraphQLString,
                 description: 'The lastName of the user.',
               },
               email: {
-                type: new GraphQLNonNull(GraphQLString)!,
+                type: new GraphQLNonNull(GraphQLString),
                 description: 'The email of the user.',
               },
             },
@@ -145,23 +151,23 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'Avatar in the profile.',
               },
               sex: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Sex in the profile.',
               },
               birthday: {
-                type: new GraphQLNonNull(GraphQLInt),
+                type: GraphQLInt,
                 description: 'Birthday in the profile.',
               },
               country: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Country in the profile.',
               },
               street: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Street in the profile.',
               },
               city: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'City in the profile.',
               },
               memberTypeId: {
@@ -188,12 +194,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'The title of the post.',
               },
               userId: {
-                type: GraphQLString,
+                type: new GraphQLNonNull(GraphQLString),
                 description: 'The userId of the post.',
               },
             },
             resolve: (root, args) => createPostHandler(fastify, { body: args }),
           },
+
           updateUser: {
             type: userType!,
             args: {
@@ -202,15 +209,15 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'The user id.',
               },
               firstName: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'The firstName of the user.',
               },
               lastName: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'The lastName of the user.',
               },
               email: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'The email of the user.',
               },
             },
@@ -232,31 +239,31 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'Profile id',
               },
               avatar: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Avatar in the profile.',
               },
               sex: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Sex in the profile.',
               },
               birthday: {
-                type: new GraphQLNonNull(GraphQLInt),
+                type: GraphQLInt,
                 description: 'Birthday in the profile.',
               },
               country: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Country in the profile.',
               },
               street: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'Street in the profile.',
               },
               city: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'City in the profile.',
               },
               memberTypeId: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'MemberTypeId in the profile.',
               },
             },
@@ -269,21 +276,45 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             type: postType!,
             args: {
               id: {
-                type: new GraphQLNonNull(GraphQLString)!,
+                type: new GraphQLNonNull(GraphQLString),
                 description: 'The post id.',
               },
               title: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'The title of the post',
               },
               content: {
-                type: new GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 description: 'The content of the post.',
               },
             },
             resolve: (root, args) => {
               const { id, ...body } = args;
               return changePostHandler(fastify, {
+                id: args.id,
+                body: body,
+              });
+            },
+          },
+          updateMemberType: {
+            type: memberTypeType!,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString)!,
+                description: 'Member type id',
+              },
+              discount: {
+                type: GraphQLInt,
+                description: 'Member type discount',
+              },
+              monthPostsLimit: {
+                type: GraphQLInt,
+                description: 'Member type monthPostsLimit',
+              },
+            },
+            resolve: (root, args) => {
+              const { id, ...body } = args;
+              return changeMemberTypesHandler(fastify, {
                 id: args.id,
                 body: body,
               });

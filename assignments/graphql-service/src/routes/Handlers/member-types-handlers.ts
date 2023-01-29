@@ -31,7 +31,7 @@ export const fetchAMemberTypesByIdHandler = async (
   throw fastify.httpErrors.notFound('Wrong ID');
 };
 
-export const changeAMemberTypesHandler = async (
+export const changeMemberTypesHandler = async (
   fastify: FastifyInstance,
   args: { id: string; body: ChangeMemberTypeDTO }
 ): Promise<MemberTypeEntity> => {

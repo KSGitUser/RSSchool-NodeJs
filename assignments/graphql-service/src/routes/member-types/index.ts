@@ -3,7 +3,7 @@ import { idParamSchema } from '../../utils/reusedSchemas';
 import { changeMemberTypeBodySchema } from './schema';
 import type { MemberTypeEntity } from '../../utils/DB/entities/DBMemberTypes';
 import {
-  changeAMemberTypesHandler,
+  changeMemberTypesHandler,
   fetchAllMemberTypesHandler,
   fetchAMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
@@ -38,7 +38,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<MemberTypeEntity> {
-      return changeAMemberTypesHandler(fastify, {
+      return changeMemberTypesHandler(fastify, {
         id: request.params.id,
         body: request.body,
       });
