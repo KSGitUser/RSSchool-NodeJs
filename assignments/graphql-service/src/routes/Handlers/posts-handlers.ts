@@ -5,6 +5,7 @@ import {
 } from '../../utils/DB/entities/DBPosts';
 import type { FastifyInstance } from 'fastify';
 import { isUUID } from '../../utils/test-uuid';
+import { fetchUserByIdHandler } from './users-handlers';
 
 export const fetchAllPostsHandler = async (
   fastifyInstance: FastifyInstance
@@ -40,9 +41,17 @@ export const createPostHandler = async (
   args: { body: CreatePostDTO }
 ): Promise<PostEntity> => {
   try {
+    const foundedUser = await fetchUserByIdHandler(fastify, {
+      id: args.body.userId,
+    });
+    if (!foundedUser) {
+      throw fastify.httpErrors.notFound('Wrong user id');
+    }
     return await fastify.db.posts.create(args.body);
-  } catch (e) {
-    throw fastify.httpErrors.badRequest('Bad request on post posts');
+  } catch (e: any) {
+    throw fastify.httpErrors.badRequest(
+      e.message || 'Bad request on post posts'
+    );
   }
 };
 

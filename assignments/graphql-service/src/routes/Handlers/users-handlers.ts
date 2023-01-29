@@ -30,7 +30,7 @@ export const fetchUserByIdHandler = async (
     }
     throw fastify.httpErrors.notFound('No user');
   }
-  throw fastify.httpErrors.notFound('Wrong uuid');
+  throw fastify.httpErrors.notFound('Wrong user uuid');
 };
 
 export const postUserHandler = async (

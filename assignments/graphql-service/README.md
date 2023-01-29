@@ -124,5 +124,20 @@ mutation {
 }
 ```
 2.10. Create post.  
+In field userId you should type id of existing user.
+```shell
+mutation {
+    createPost(
+        title: "GraphQl example",
+        content: "Post about GraphQl",
+        userId: "1913fbf6-9527-41bc-a471-2b9d8867981e"
+        ) {
+            id
+            title
+            content
+            userId
+        }
+}
+```
 2.11. [InputObjectType](https://graphql.org/graphql-js/type/#graphqlinputobjecttype) for DTOs.
 

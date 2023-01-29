@@ -9,7 +9,10 @@ import {
   GraphQLString,
 } from 'graphql/type';
 import { graphql } from 'graphql/graphql';
-import { fetchAllPostsHandler } from '../Handlers/posts-handlers';
+import {
+  createPostHandler,
+  fetchAllPostsHandler,
+} from '../Handlers/posts-handlers';
 import { postType, profileType, userType } from './graphql-types';
 import {
   fetchAllUsersHandler,
@@ -167,6 +170,24 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
             },
             resolve: (root, args) =>
               createProfileHandler(fastify, { body: args }),
+          },
+          createPost: {
+            type: postType!,
+            args: {
+              title: {
+                type: GraphQLString,
+                description: 'The title of the post.',
+              },
+              content: {
+                type: GraphQLString,
+                description: 'The title of the post.',
+              },
+              userId: {
+                type: GraphQLString,
+                description: 'The userId of the post.',
+              },
+            },
+            resolve: (root, args) => createPostHandler(fastify, { body: args }),
           },
           userSubscribeTo: {
             type: userType,
