@@ -5,7 +5,7 @@ import type { MemberTypeEntity } from '../../utils/DB/entities/DBMemberTypes';
 import {
   changeMemberTypesHandler,
   fetchAllMemberTypesHandler,
-  fetchAMemberTypesByIdHandler,
+  fetchMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -25,7 +25,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<MemberTypeEntity> {
-      return fetchAMemberTypesByIdHandler(fastify, { id: request.params.id });
+      return fetchMemberTypesByIdHandler(fastify, { id: request.params.id });
     }
   );
 

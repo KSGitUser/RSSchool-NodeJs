@@ -83,7 +83,7 @@ All examples in GraphQl format of request. If You would like to send them line a
 
 ###  Get gql requests:
 2.1. Get users, profiles, posts, memberTypes - 4 operations in one query.
-```shell
+```
 query {
    allUsers {
         id
@@ -117,7 +117,73 @@ query {
 }
 ```
 2.2. Get user, profile, post, memberType by id - 4 operations in one query.
+You should add existing ids
+```
+query {
+   getUserById (id: "bd979fea-8781-49e7-bf68-b9b92501be53"){
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+   }
+   getProfileById (id: "177d1f47-9c98-482a-b9c9-9fedeee560c0") {
+        id
+        avatar
+        sex
+        birthday
+        country
+        street
+        city
+        memberTypeId
+        userId
+        }
+   getPostById(id: "b31e87cc-dab6-4747-968d-39b0ad7f389c") {
+       id
+       id
+       content
+       userId
+   }
+   getMemberTypeById (id: "basic") {
+       id
+       discount
+       monthPostsLimit
+   }
+}
+```
 2.3. Get users with their posts, profiles, memberTypes.
+```
+query {
+   allUsers {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        userPosts {
+            id
+            content
+            userId
+        },
+        userProfiles {
+            id
+            avatar
+            sex
+            birthday
+            country
+            street
+            city
+            memberTypeId
+            userId
+        }
+        userMemberTypes {
+            id
+            discount
+            monthPostsLimit
+        }
+   }
+}
+```
 2.4. Get user by id with his posts, profile, memberType.
 2.5. Get users with their userSubscribedTo, profile.
 2.6. Get user by id with his subscribedToUser, posts.

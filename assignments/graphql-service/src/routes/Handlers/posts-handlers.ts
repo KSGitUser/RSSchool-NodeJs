@@ -83,3 +83,20 @@ export const changePostHandler = async (
   }
   throw fastify.httpErrors.badRequest('Wrong UUID on posts patch');
 };
+
+export const fetchAllPostsByUserId = async (
+  fastify: FastifyInstance,
+  args: { userId: string }
+): Promise<PostEntity[]> => {
+  if (isUUID(args.userId)) {
+    try {
+      return await fastify.db.posts.findMany({
+        key: 'userId',
+        equals: args.userId,
+      });
+    } catch (e) {
+      throw fastify.httpErrors.badRequest('Error on posts patch');
+    }
+  }
+  throw fastify.httpErrors.badRequest('Wrong UUID on fetch all posts');
+};

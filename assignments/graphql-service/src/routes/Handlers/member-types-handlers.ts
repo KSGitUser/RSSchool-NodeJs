@@ -3,6 +3,8 @@ import {
   ChangeMemberTypeDTO,
   MemberTypeEntity,
 } from '../../utils/DB/entities/DBMemberTypes';
+import { isUUID } from '../../utils/test-uuid';
+import { fetchAllProfilesByUserIdHandler } from './profiles-handlers';
 
 export const fetchAllMemberTypesHandler = async (
   fastify: FastifyInstance
@@ -10,7 +12,7 @@ export const fetchAllMemberTypesHandler = async (
   return fastify.db.memberTypes.findMany();
 };
 
-export const fetchAMemberTypesByIdHandler = async (
+export const fetchMemberTypesByIdHandler = async (
   fastify: FastifyInstance,
   args: { id: string }
 ): Promise<MemberTypeEntity> => {
@@ -52,4 +54,44 @@ export const changeMemberTypesHandler = async (
     }
   }
   throw fastify.httpErrors.badRequest('Wrong ID on Member Types change');
+};
+
+export const fetchAllMemberTypesByUserIdHandler = async (
+  fastify: FastifyInstance,
+  args: { userId: string }
+): Promise<MemberTypeEntity[]> => {
+  if (isUUID(args.userId)) {
+    try {
+      const userProfiles = await fetchAllProfilesByUserIdHandler(fastify, {
+        userId: args.userId,
+      });
+      if (!userProfiles) {
+        return [];
+      }
+      const userMemberTypeIds = new Map();
+      userProfiles.forEach((profile) => {
+        userMemberTypeIds.set(profile.memberTypeId, profile.memberTypeId);
+      });
+      const resultMemberTypesPromises: Promise<MemberTypeEntity>[] = [];
+      Array.from(userMemberTypeIds.keys()).forEach((key) => {
+        const findOnePromise = fastify.db.memberTypes.findOne({
+          key: 'id',
+          equals: key,
+        });
+        if (findOnePromise) {
+          resultMemberTypesPromises.push(
+            findOnePromise as Promise<MemberTypeEntity>
+          );
+        }
+      });
+      return await Promise.all(resultMemberTypesPromises);
+    } catch (e) {
+      throw fastify.httpErrors.badRequest(
+        'Error on fetchAllMemberTypesByUserIdHandler'
+      );
+    }
+  }
+  throw fastify.httpErrors.badRequest(
+    'Wrong UUID on fetchAllMemberTypesByUserIdHandler'
+  );
 };

@@ -13,6 +13,7 @@ import {
   changePostHandler,
   createPostHandler,
   fetchAllPostsHandler,
+  fetchPostByIdHandler,
 } from '../Handlers/posts-handlers';
 import {
   memberTypeType,
@@ -31,10 +32,12 @@ import {
   changeProfileHandler,
   createProfileHandler,
   fetchAllProfileHandler,
+  fetchProfileByIdHandler,
 } from '../Handlers/profiles-handlers';
 import {
   changeMemberTypesHandler,
   fetchAllMemberTypesHandler,
+  fetchMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
 
 // const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
@@ -130,6 +133,36 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
               },
             },
             resolve: (root, args) => fetchUserByIdHandler(fastify, args),
+          },
+          getProfileById: {
+            type: profileType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Profile UUID',
+              },
+            },
+            resolve: (root, args) => fetchProfileByIdHandler(fastify, args),
+          },
+          getPostById: {
+            type: postType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Post UUID',
+              },
+            },
+            resolve: (root, args) => fetchPostByIdHandler(fastify, args),
+          },
+          getMemberTypeById: {
+            type: memberTypeType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Member Type UUID',
+              },
+            },
+            resolve: (root, args) => fetchMemberTypesByIdHandler(fastify, args),
           },
         }),
       });
@@ -355,10 +388,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         types: [postType],
       });
 
-      // eslint-disable-next-line no-console
-      console.log('request.body.query =>', request.body.query);
       const response = await graphql({
         schema: StarWarsSchema,
+        contextValue: { fastify: fastify },
         source: String(request.body.query),
       });
       // eslint-disable-next-line no-console

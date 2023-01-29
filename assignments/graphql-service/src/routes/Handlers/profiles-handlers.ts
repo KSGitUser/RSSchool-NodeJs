@@ -100,3 +100,24 @@ export const changeProfileHandler = async (
   }
   throw fastify.httpErrors.badRequest('No valid profile Id');
 };
+
+export const fetchAllProfilesByUserIdHandler = async (
+  fastify: FastifyInstance,
+  args: { userId: string }
+): Promise<ProfileEntity[]> => {
+  if (isUUID(args.userId)) {
+    try {
+      return await fastify.db.profiles.findMany({
+        key: 'userId',
+        equals: args.userId,
+      });
+    } catch (e) {
+      throw fastify.httpErrors.badRequest(
+        'Error on fetchAllProfilesByUserIdHandler'
+      );
+    }
+  }
+  throw fastify.httpErrors.badRequest(
+    'Wrong UUID on fetchAllProfilesByUserIdHandler'
+  );
+};

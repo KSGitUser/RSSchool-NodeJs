@@ -6,6 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql/type';
+import { fetchAllPostsByUserId } from '../Handlers/posts-handlers';
+import { fetchAllProfilesByUserIdHandler } from '../Handlers/profiles-handlers';
+import { fetchAllMemberTypesByUserIdHandler } from '../Handlers/member-types-handlers';
 
 export const postType = new GraphQLObjectType({
   name: 'Post',
@@ -78,6 +81,28 @@ export const userType = new GraphQLObjectType({
       type: new GraphQLList(GraphQLString),
       resolve: (root) => {
         return root.subscribedToUserIds;
+      },
+    },
+    userPosts: {
+      type: new GraphQLList(postType),
+      resolve: (root, args, context) => {
+        return fetchAllPostsByUserId(context.fastify, { userId: root.id });
+      },
+    },
+    userProfiles: {
+      type: new GraphQLList(profileType),
+      resolve: (root, args, context) => {
+        return fetchAllProfilesByUserIdHandler(context.fastify, {
+          userId: root.id,
+        });
+      },
+    },
+    userMemberTypes: {
+      type: new GraphQLList(memberTypeType),
+      resolve: (root, args, context) => {
+        return fetchAllMemberTypesByUserIdHandler(context.fastify, {
+          userId: root.id,
+        });
       },
     },
   }),
