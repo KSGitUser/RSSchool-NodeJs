@@ -24,7 +24,7 @@ import {
 import {
   changeUserHandler,
   fetchAllUsersHandler,
-  fetchUserByIdHandler,
+  // fetchUserByIdHandler,
   postUserHandler,
   unsubscribeUserFromHandler,
   userSubscribeToHandler,
@@ -40,59 +40,7 @@ import {
   fetchAllMemberTypesHandler,
   fetchMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
-
-// const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
-//   fastify
-// ): Promise<void> => {
-//   fastify.post(
-//     '/',
-//     {
-//       schema: {
-//         body: graphqlBodySchema,
-//       },
-//     },
-//     async function (request, reply) {
-//       // Construct a schema, using GraphQL schema language
-//       var schemaHello = buildSchema(`
-//       type Query {
-//         hello: String
-//       }
-//        `);
-//
-//       const schemaBuy = buildSchema(`
-//       type Query {
-//          buy: String
-//       }`);
-//
-//       // The rootValue provides a resolver function for each API endpoint
-//       var rootValue = {
-//         hello: () => {
-//           return 'Hello world!';
-//         },
-//         buy: () => {
-//           return 'Buy world!';
-//         },
-//       };
-//       let response;
-//
-//       // Run the GraphQL query '{ hello }' and print out the response
-//       response = await graphql({
-//         schema: schemaHello,
-//         source: '{ hello }',
-//         rootValue,
-//       });
-//
-//       response = await graphql({
-//         schema: schemaBuy,
-//         source: '{ buy }',
-//         rootValue,
-//       });
-//
-//       console.log('response =>', response);
-//       return response;
-//     }
-//   );
-// };
+import { usersLoader } from './dataLoaders';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -133,7 +81,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'User UUID',
               },
             },
-            resolve: (root, args) => fetchUserByIdHandler(fastify, args),
+            // resolve: (root, args) => fetchUserByIdHandler(fastify, args),
+            resolve: (root, args, context) => {
+              // add data load
+              return context.usersLoader.load(args.id);
+            },
           },
           getProfileById: {
             type: profileType,
@@ -404,19 +356,17 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         }),
       });
 
-      const StarWarsSchema: GraphQLSchema = new GraphQLSchema({
+      const graphQLSchema: GraphQLSchema = new GraphQLSchema({
         query: queryType,
         mutation: mutationType,
         types: [postType],
       });
 
       const response = await graphql({
-        schema: StarWarsSchema,
-        contextValue: { fastify: fastify },
+        schema: graphQLSchema,
+        contextValue: { fastify: fastify, usersLoader: usersLoader(fastify) },
         source: String(request.body.query),
       });
-      // eslint-disable-next-line no-console
-      console.log('response =>', response);
       reply.send(response);
     }
   );

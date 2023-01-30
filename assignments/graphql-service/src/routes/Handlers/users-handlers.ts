@@ -16,6 +16,13 @@ export const fetchAllUsersHandler = async (
   }
 };
 
+export const fetchManyUsersByIds = async (
+  fastify: FastifyInstance,
+  { ids }: { ids: readonly string[] }
+): Promise<UserEntity[]> => {
+  return fastify.db.users.findMany({ key: 'id', equalsAnyOf: ids as string[] });
+};
+
 export const fetchUserByIdHandler = async (
   fastify: FastifyInstance,
   { id }: { id: string }

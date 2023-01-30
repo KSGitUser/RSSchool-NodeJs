@@ -9,10 +9,7 @@ import {
 import { fetchAllPostsByUserId } from '../Handlers/posts-handlers';
 import { fetchAllProfilesByUserIdHandler } from '../Handlers/profiles-handlers';
 import { fetchAllMemberTypesByUserIdHandler } from '../Handlers/member-types-handlers';
-import {
-  usersSubscribedToHandler,
-  subscribedToUserHandler,
-} from '../Handlers/users-handlers';
+import { usersSubscribedToHandler } from '../Handlers/users-handlers';
 import { FastifyInstance } from 'fastify';
 
 export const postType = new GraphQLObjectType({
@@ -65,6 +62,7 @@ type TUserTypeTSource = {
 
 type TUserTypeTContext = {
   fastify: FastifyInstance;
+  usersLoader: any;
 };
 
 export const userType: GraphQLObjectType<TUserTypeTSource, TUserTypeTContext> =
@@ -141,9 +139,14 @@ export const userType: GraphQLObjectType<TUserTypeTSource, TUserTypeTContext> =
         type: new GraphQLList(userType),
         description: 'List of subscribed to users with full data',
         resolve: (root, args, context) => {
-          return subscribedToUserHandler(context.fastify, {
-            subscribedIds: root.subscribedToUserIds,
+          // add data loader
+          const users = root.subscribedToUserIds.map((userId) => {
+            return context.usersLoader.load(userId);
           });
+          return users;
+          // return subscribedToUserHandler(context.fastify, {
+          //   subscribedIds: root.subscribedToUserIds,
+          // });
         },
       },
     }),
