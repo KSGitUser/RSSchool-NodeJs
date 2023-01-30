@@ -568,6 +568,53 @@ Add dataLoaders
     },
 ```
 
+```javascript
+      getProfileById: {
+        type: profileType,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'Profile UUID',
+          },
+        },
+        // resolve: (root, args) => fetchProfileByIdHandler(fastify, args),
+        // use dataLoader
+        resolve: (root, args, context) =>
+          context.profilesLoader.load(args.id),
+      },
+```
+
+```javascript
+          getPostById: {
+            type: postType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Post UUID',
+              },
+            },
+            // resolve: (root, args) => fetchPostByIdHandler(fastify, args),
+            // use dataLoader
+            resolve: (root, args, context) => context.postsLoader.load(args.id),
+          },
+```
+
+```javascript
+          getMemberTypeById: {
+            type: memberTypeType,
+            args: {
+              id: {
+                type: new GraphQLNonNull(GraphQLString),
+                description: 'Member Type UUID',
+              },
+            },
+            // resolve: (root, args) => fetchMemberTypesByIdHandler(fastify, args),
+            // use dataLoader
+            resolve: (root, args, context) =>
+              context.memberTypesLoader.load(args.id),
+          },
+```
+
 ## 4 Limit the complexity of the graphql queries by their depth with graphql-depth-limit package.
 
 Code is here:

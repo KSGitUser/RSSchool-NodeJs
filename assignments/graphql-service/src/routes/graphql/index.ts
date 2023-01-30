@@ -13,7 +13,7 @@ import {
   changePostHandler,
   createPostHandler,
   fetchAllPostsHandler,
-  fetchPostByIdHandler,
+  // fetchPostByIdHandler,
 } from '../Handlers/posts-handlers';
 import {
   memberTypeType,
@@ -33,14 +33,19 @@ import {
   changeProfileHandler,
   createProfileHandler,
   fetchAllProfileHandler,
-  fetchProfileByIdHandler,
+  // fetchProfileByIdHandler,
 } from '../Handlers/profiles-handlers';
 import {
   changeMemberTypesHandler,
   fetchAllMemberTypesHandler,
-  fetchMemberTypesByIdHandler,
+  // fetchMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
-import { usersLoader } from './dataLoaders';
+import {
+  memberTypesLoader,
+  postsLoader,
+  profilesLoader,
+  usersLoader,
+} from './dataLoaders';
 import * as depthLimit from 'graphql-depth-limit';
 import { validate } from 'graphql/validation';
 import { parse, Source } from 'graphql/language';
@@ -66,7 +71,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
           },
           allUsers: {
             type: new GraphQLList(userType),
-            resolve: (root, args) => fetchAllUsersHandler(fastify),
+            resolve: (root, args, context) => fetchAllUsersHandler(fastify),
           },
           allProfiles: {
             type: new GraphQLList(profileType),
@@ -98,7 +103,10 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'Profile UUID',
               },
             },
-            resolve: (root, args) => fetchProfileByIdHandler(fastify, args),
+            // resolve: (root, args) => fetchProfileByIdHandler(fastify, args),
+            // use dataLoader
+            resolve: (root, args, context) =>
+              context.profilesLoader.load(args.id),
           },
           getPostById: {
             type: postType,
@@ -108,7 +116,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'Post UUID',
               },
             },
-            resolve: (root, args) => fetchPostByIdHandler(fastify, args),
+            // resolve: (root, args) => fetchPostByIdHandler(fastify, args),
+            // use dataLoader
+            resolve: (root, args, context) => context.postsLoader.load(args.id),
           },
           getMemberTypeById: {
             type: memberTypeType,
@@ -118,7 +128,10 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
                 description: 'Member Type UUID',
               },
             },
-            resolve: (root, args) => fetchMemberTypesByIdHandler(fastify, args),
+            // resolve: (root, args) => fetchMemberTypesByIdHandler(fastify, args),
+            // use dataLoader
+            resolve: (root, args, context) =>
+              context.memberTypesLoader.load(args.id),
           },
         }),
       });
@@ -377,7 +390,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
 
       const response = await graphql({
         schema: graphQLSchema,
-        contextValue: { fastify: fastify, usersLoader: usersLoader(fastify) },
+        contextValue: {
+          fastify: fastify,
+          usersLoader: usersLoader(fastify),
+          profilesLoader: profilesLoader(fastify),
+          postsLoader: postsLoader(fastify),
+          memberTypesLoader: memberTypesLoader(fastify),
+        },
         source: String(request.body.query),
       });
       reply.send(response);
