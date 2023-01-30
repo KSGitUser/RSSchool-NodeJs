@@ -4,7 +4,7 @@ It's a part of repository:
 
 Clone branch:
 ```shell
-   git clone --branch task-5/graphql-basic --single-branch https://github.com/KSGitUser/RSSchool-nodejs.git
+   git clone --branch task-5/graphql-basics --single-branch https://github.com/KSGitUser/RSSchool-nodejs.git
 ```
 
 Go to the directory of graphql-basic
