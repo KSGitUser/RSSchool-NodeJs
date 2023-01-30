@@ -6,11 +6,24 @@ import {
   subscribeBodySchema,
 } from './schemas';
 import type { UserEntity } from '../../utils/DB/entities/DBUsers';
+import fastifySensible from '@fastify/sensible';
+import {
+  changeUserHandler,
+  deleteUserHandler,
+  fetchAllUsersHandler,
+  fetchUserByIdHandler,
+  postUserHandler,
+  unsubscribeUserFromHandler,
+  userSubscribeToHandler,
+} from '../Handlers/users-handlers';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
-  fastify.get('/', async function (request, reply): Promise<UserEntity[]> {});
+  fastify.register(fastifySensible);
+  fastify.get('/', async function (request, reply): Promise<UserEntity[]> {
+    return fetchAllUsersHandler(fastify);
+  });
 
   fastify.get(
     '/:id',
@@ -19,7 +32,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return fetchUserByIdHandler(fastify, { id: request.params.id });
+    }
   );
 
   fastify.post(
@@ -29,7 +44,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         body: createUserBodySchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return await postUserHandler(fastify, request.body);
+    }
   );
 
   fastify.delete(
@@ -39,7 +56,9 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return deleteUserHandler(fastify, { id: request.params.id });
+    }
   );
 
   fastify.post(
@@ -50,7 +69,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return userSubscribeToHandler(fastify, {
+        userId: request.body.userId,
+        id: request.params.id,
+      });
+    }
   );
 
   fastify.post(
@@ -61,7 +85,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return unsubscribeUserFromHandler(fastify, {
+        id: request.params.id,
+        userId: request.body.userId,
+      });
+    }
   );
 
   fastify.patch(
@@ -72,7 +101,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         params: idParamSchema,
       },
     },
-    async function (request, reply): Promise<UserEntity> {}
+    async function (request, reply): Promise<UserEntity> {
+      return changeUserHandler(fastify, {
+        id: request.params.id,
+        fieldsToChange: request.body,
+      });
+    }
   );
 };
 
