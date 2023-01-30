@@ -568,5 +568,68 @@ Add dataLoaders
     },
 ```
 
+## 4 Limit the complexity of the graphql queries by their depth with graphql-depth-limit package.
+
+Code is here:
+assignments/graphql-service/src/routes/graphql/index.ts
+
+```javascript
+      const source = new Source(String(request.body.query));
+      const ast = parse(source);
+
+      let validationsResult = validate(graphQLSchema, ast, [depthLimit(2)]);
+      if (validationsResult.length) {
+        const errorMessage = validationsResult[0].message;
+        validationsResult = [];
+        throw fastify.httpErrors.badRequest(errorMessage);
+      }
+```
+Request
+```javascript
+query {
+  allUsers {
+        id
+        firstName
+        lastName
+        email
+        subscribedToUserIds
+        usersSubscribedTo {
+            id
+            usersSubscribedTo {
+                id
+                usersSubscribedTo {
+                    id
+                    usersSubscribedTo {
+                        id
+                        usersSubscribedTo {
+                            id
+                            usersSubscribedTo {
+                                id
+                                usersSubscribedTo {
+                                    id
+                                    usersSubscribedTo {
+                                        id
+                                
+                                    }
+                                }
+                            }    
+                        }                
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Response 
+```javascript
+{
+    "statusCode": 400,
+    "error": "Bad Request",
+    "message": "'' exceeds maximum operation depth of 6"
+}
+```
+
 
 

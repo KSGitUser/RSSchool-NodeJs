@@ -41,6 +41,9 @@ import {
   fetchMemberTypesByIdHandler,
 } from '../Handlers/member-types-handlers';
 import { usersLoader } from './dataLoaders';
+import * as depthLimit from 'graphql-depth-limit';
+import { validate } from 'graphql/validation';
+import { parse, Source } from 'graphql/language';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -361,6 +364,16 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         mutation: mutationType,
         types: [postType],
       });
+
+      const source = new Source(String(request.body.query));
+      const ast = parse(source);
+
+      let validationsResult = validate(graphQLSchema, ast, [depthLimit(6)]);
+      if (validationsResult.length) {
+        const errorMessage = validationsResult[0].message;
+        validationsResult = [];
+        throw fastify.httpErrors.badRequest(errorMessage);
+      }
 
       const response = await graphql({
         schema: graphQLSchema,
