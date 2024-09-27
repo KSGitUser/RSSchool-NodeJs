@@ -1,0 +1,37 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "description": "Task-3 RS-school node.js crud-api",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "copy-env": "node -e 'fs.cpSync(\".env.example\", \".env\", {force: true})'",
+    "delete-build": "node -e 'fs.rmSync(\"./build\", {recursive: true, force: true})'",
+    "test": "npm run copy-env && jest --runInBand",
+    "start:dev": "npm run copy-env && nodemon",
+    "start:prod": "npm run copy-env && npm run delete-build && tsc  --rootDir . --outDir build && node ./build/index.js",
+    "start:multi": "npm run copy-env && npm run delete-build && tsc  --rootDir . --outDir build && node ./build/cluster.js"
+  },
+  "keywords": [],
+  "author": "KSGitUser",
+  "license": "MIT",
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/jest": "^29.2.5",
+    "@types/uuid": "^9.0.0",
+    "babel": "^6.23.0",
+    "babel-jest": "^29.3.1",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">= 18.12"
+  }
+}
